@@ -14,6 +14,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class Profissional extends Usuario {
 
     @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL)
