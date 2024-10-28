@@ -68,6 +68,21 @@ import static org.junit.jupiter.api.Assertions.*;
         assertEquals("Cliente já cadastrado", exception.getMessage());
     }
 
+    @Test
+     void consultaCLienteNaBase() {
+        Cliente cliente = new Cliente();
+        cliente.setNome("nome");
+        cliente.setEmail("teste@gmail.com");
+        cliente.setCodigoPessoa("123456789");
+
+        Mockito.when(usuarioRepository.findByUsuarioDoTipoCliente("123456789")).thenReturn(cliente);
+
+        Cliente clienteConsultado = clienteService.consultaCliente("123456789");
+
+        assertEquals(cliente.getNome(), clienteConsultado.getNome());
+        assertEquals(cliente.getCodigoPessoa(), clienteConsultado.getCodigoPessoa());
+
+    }
 
 
 }
