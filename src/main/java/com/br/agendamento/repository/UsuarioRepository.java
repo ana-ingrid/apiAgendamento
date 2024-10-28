@@ -1,5 +1,6 @@
 package com.br.agendamento.repository;
 
+import com.br.agendamento.model.Cliente;
 import com.br.agendamento.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,10 +12,14 @@ import java.util.List;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
-     @Query(value = "SELECT u.tipoUsuario FROM Usuario u WHERE u.tipoUsuario IN ('CLIENTE', 'PROFISSIONAL') AND u.codigoPessoa = :codigo", nativeQuery = true)
-     List<String> findTipoUsuariobyCodigoPessoa(@Param("codigo") String codigo);
+     @Query(value = "SELECT u.tipo_usuario FROM usuario u WHERE u.tipo_usuario IN ('CLIENTE') AND u.codigo_pessoa = :codigo", nativeQuery = true)
+     List<String> findByCLientePeloCodigoPessoa(@Param("codigo") String codigo);
 
-//     @Query("SELECT u FROM usuario u WHERE u.tipo_usuario= IN ('CLIENT','PROFISSIONAL') AND U.codigo_pessoa=:codigo")
-//     Usuario findbyUsuario(@Param("codigo") String codigo);
+     @Query(value = "SELECT * FROM usuario u WHERE u.tipo_usuario IN ('CLIENTE') AND codigo_pessoa = :codigo", nativeQuery = true)
+     Cliente findByUsuarioDoTipoCliente(@Param("codigo") String codigo);
+
+     @Query(value = "SELECT u.tipo_usuario FROM usuario u WHERE u.tipo_usuario IN ('PROFISSIONAL') AND u.codigo_pessoa = :codigo", nativeQuery = true)
+     List<String> findByProfissionalPeloCodigoPessoa(@Param("codigo") String codigo);
+
 
 }
