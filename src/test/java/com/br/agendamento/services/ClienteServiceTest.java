@@ -2,6 +2,7 @@ package com.br.agendamento.services;
 
 
 import com.br.agendamento.exceptions.ClienteCadastradoException;
+import com.br.agendamento.exceptions.ClienteNaoExisteException;
 import com.br.agendamento.model.Cliente;
 import com.br.agendamento.model.dtos.CadastraClienteDTO;
 import com.br.agendamento.repository.UsuarioRepository;
@@ -82,6 +83,21 @@ import static org.junit.jupiter.api.Assertions.*;
         assertEquals(cliente.getNome(), clienteConsultado.getNome());
         assertEquals(cliente.getCodigoPessoa(), clienteConsultado.getCodigoPessoa());
 
+    }
+
+    @Test
+    void NaoLocalizaClienteNaBase() {
+        Cliente cliente = new Cliente();
+        cliente.setNome("nome");
+        cliente.setEmail("teste@gmail.com");
+        cliente.setCodigoPessoa("123456789");
+
+        Mockito.when(usuarioRepository.findByUsuarioDoTipoCliente("123456789")).thenThrow(new ClienteNaoExisteException("Cliente não existe"));
+
+        ClienteNaoExisteException exception = assertThrows(ClienteNaoExisteException.class, () -> clienteService.consultaCliente("123456789"));
+
+
+        assertEquals("Cliente não existe",exception.getMessage());
     }
 
 
