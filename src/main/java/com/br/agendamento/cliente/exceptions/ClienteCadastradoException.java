@@ -1,4 +1,4 @@
-package com.br.agendamento.exceptions;
+package com.br.agendamento.cliente.exceptions;
 
 public class ClienteCadastradoException extends RuntimeException {
 

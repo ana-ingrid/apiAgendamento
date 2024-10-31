@@ -1,4 +1,4 @@
-package com.br.agendamento.exceptions;
+package com.br.agendamento.cliente.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
