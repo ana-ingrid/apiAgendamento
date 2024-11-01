@@ -1,5 +1,6 @@
-package com.br.agendamento.model;
+package com.br.agendamento.servico.model;
 
+import com.br.agendamento.profissional.model.Profissional;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

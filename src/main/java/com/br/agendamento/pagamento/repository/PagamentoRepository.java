@@ -1,6 +1,6 @@
-package com.br.agendamento.repository;
+package com.br.agendamento.pagamento.repository;
 
-import com.br.agendamento.model.Pagamento;
+import com.br.agendamento.pagamento.model.Pagamento;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

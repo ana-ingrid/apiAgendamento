@@ -1,6 +1,6 @@
-package com.br.agendamento.repository;
+package com.br.agendamento.servico.repository;
 
-import com.br.agendamento.model.Servico;
+import com.br.agendamento.servico.model.Servico;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

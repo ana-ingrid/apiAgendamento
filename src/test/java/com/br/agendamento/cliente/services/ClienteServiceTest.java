@@ -1,12 +1,12 @@
-package com.br.agendamento.services;
+package com.br.agendamento.cliente.services;
 
 
-import com.br.agendamento.exceptions.ClienteCadastradoException;
-import com.br.agendamento.exceptions.ClienteNaoExisteException;
-import com.br.agendamento.model.Cliente;
-import com.br.agendamento.model.dtos.CadastraClienteDTO;
-import com.br.agendamento.repository.UsuarioRepository;
-import com.br.agendamento.service.ClienteService;
+import com.br.agendamento.cliente.exceptions.ClienteCadastradoException;
+import com.br.agendamento.cliente.exceptions.ClienteNaoExisteException;
+import com.br.agendamento.cliente.model.Cliente;
+import com.br.agendamento.cliente.model.dtos.CadastraClienteDTO;
+import com.br.agendamento.usuario.repository.UsuarioRepository;
+import com.br.agendamento.cliente.service.ClienteService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -86,7 +86,7 @@ import static org.junit.jupiter.api.Assertions.*;
     }
 
     @Test
-    void NaoLocalizaClienteNaBase() {
+    void naoLocalizaClienteNaBase() {
         Cliente cliente = new Cliente();
         cliente.setNome("nome");
         cliente.setEmail("teste@gmail.com");
@@ -100,5 +100,28 @@ import static org.junit.jupiter.api.Assertions.*;
         assertEquals("Cliente não existe",exception.getMessage());
     }
 
+
+    @Test
+    void deletaUsuarioNaBase() {
+        Cliente cliente = new Cliente();
+        cliente.setNome("nome");
+        cliente.setEmail("teste@gmail.com");
+        cliente.setCodigoPessoa("123456789");
+
+        Mockito.when(usuarioRepository.findByUsuarioDoTipoCliente("123456789")).thenReturn(cliente);
+        clienteService.deletaCliente(cliente.getCodigoPessoa());
+
+        Mockito.verify(usuarioRepository, Mockito.times(1)).delete(cliente);
+    }
+
+    @Test
+    void erroDeClienteNaoLocalizadoAoDeletarUsuarioNaBase() {
+        Mockito.when(usuarioRepository.findByUsuarioDoTipoCliente("123456789")).thenThrow(new ClienteNaoExisteException("Cliente não existe"));
+
+        ClienteNaoExisteException exception = assertThrows(ClienteNaoExisteException.class, () -> clienteService.deletaCliente("123456789"));
+
+        assertEquals("Cliente não existe", exception.getMessage());
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByUsuarioDoTipoCliente("123456789");
+    }
 
 }
