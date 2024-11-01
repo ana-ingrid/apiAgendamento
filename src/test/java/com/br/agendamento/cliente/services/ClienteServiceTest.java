@@ -114,5 +114,14 @@ import static org.junit.jupiter.api.Assertions.*;
         Mockito.verify(usuarioRepository, Mockito.times(1)).delete(cliente);
     }
 
+    @Test
+    void erroDeClienteNaoLocalizadoAoDeletarUsuarioNaBase() {
+        Mockito.when(usuarioRepository.findByUsuarioDoTipoCliente("123456789")).thenThrow(new ClienteNaoExisteException("Cliente não existe"));
+
+        ClienteNaoExisteException exception = assertThrows(ClienteNaoExisteException.class, () -> clienteService.deletaCliente("123456789"));
+
+        assertEquals("Cliente não existe", exception.getMessage());
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByUsuarioDoTipoCliente("123456789");
+    }
 
 }
