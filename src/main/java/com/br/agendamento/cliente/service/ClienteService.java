@@ -25,15 +25,8 @@ public class ClienteService {
 
 
     public Boolean consultaSeUsuarioClienteNaoExiste(String codigo){
-        List<String> tipoUsuario = usuarioRepository.findByCLientePeloCodigoPessoa(codigo);
-        if (!tipoUsuario.isEmpty()){
-            for (String tipo : tipoUsuario){
-                if (tipo.equalsIgnoreCase("CLIENTE")){
-                    return false;
-                }
-            }
-        }
-        return true;
+        Cliente tipoUsuario = usuarioRepository.findByCLientePeloCodigoPessoa(codigo);
+        return !Objects.isNull(tipoUsuario);
     }
 
     public Cliente cadastraCliente(CadastraClienteDTO cliente){
