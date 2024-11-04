@@ -6,6 +6,7 @@ import com.br.agendamento.cliente.exceptions.ClienteNaoExisteException;
 import com.br.agendamento.cliente.model.Cliente;
 import com.br.agendamento.cliente.model.dtos.AlteraClienteDTO;
 import com.br.agendamento.cliente.model.dtos.CadastraClienteDTO;
+import com.br.agendamento.config.MensagensDeErros;
 import com.br.agendamento.usuario.repository.UsuarioRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -32,11 +33,11 @@ public class ClienteService {
     public Cliente cadastraCliente(CadastraClienteDTO cliente){
         String codigo = cliente.getCodigoPessoa();
         if (Objects.nonNull(usuarioRepository.findByUsuarioDoTipoCliente(codigo))){
-            throw new ClienteCadastradoException("Cliente já cadastrado");
+            throw new ClienteCadastradoException(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao());
         }
 
         if (Boolean.FALSE.equals(consultaSeUsuarioClienteNaoExiste(codigo))){
-            throw new ClienteCadastradoException("Cliente já cadastrado");
+            throw new ClienteCadastradoException(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao());
         }
 
         Cliente clienteMapeado = modelMapper.map(cliente, Cliente.class);
@@ -47,7 +48,7 @@ public class ClienteService {
     public Cliente consultaCliente(String codigo){
         Cliente cliente = usuarioRepository.findByUsuarioDoTipoCliente(codigo);
         if (Objects.isNull(cliente)){
-            throw new ClienteNaoExisteException("Cliente não existe");
+            throw new ClienteNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao());
         }
         return cliente;
     }
@@ -66,7 +67,7 @@ public class ClienteService {
     public void deletaCliente(String codigo){
         Cliente cliente = usuarioRepository.findByUsuarioDoTipoCliente(codigo);
         if (Objects.isNull(cliente)){
-            throw new ClienteNaoExisteException("Cliente não existe");
+            throw new ClienteNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao());
         }
         usuarioRepository.delete(cliente);
     }
