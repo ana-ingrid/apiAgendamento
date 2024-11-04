@@ -1,7 +1,8 @@
-package com.br.agendamento.model;
+package com.br.agendamento.pagamento.model;
 
-import com.br.agendamento.model.enums.EnumStatusPagamento;
-import com.br.agendamento.model.enums.EnumTipoPagamento;
+import com.br.agendamento.agendamento.model.Agendamento;
+import com.br.agendamento.pagamento.model.enums.EnumStatusPagamento;
+import com.br.agendamento.pagamento.model.enums.EnumTipoPagamento;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

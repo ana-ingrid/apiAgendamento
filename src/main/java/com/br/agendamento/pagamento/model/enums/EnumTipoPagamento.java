@@ -1,4 +1,4 @@
-package com.br.agendamento.model.enums;
+package com.br.agendamento.pagamento.model.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

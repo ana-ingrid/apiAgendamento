@@ -1,4 +1,4 @@
-package com.br.agendamento.model;
+package com.br.agendamento.usuario.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
