@@ -1,8 +1,8 @@
 package com.br.agendamento.cliente.services;
 
 
-import com.br.agendamento.cliente.exceptions.ClienteCadastradoException;
-import com.br.agendamento.cliente.exceptions.ClienteNaoExisteException;
+import com.br.agendamento.usuario.exceptions.UsuarioCadastradoException;
+import com.br.agendamento.usuario.exceptions.UsuarioNaoExisteException;
 import com.br.agendamento.cliente.model.Cliente;
 import com.br.agendamento.cliente.model.dtos.CadastraClienteDTO;
 import com.br.agendamento.usuario.repository.UsuarioRepository;
@@ -61,10 +61,10 @@ import static org.junit.jupiter.api.Assertions.*;
         clienteDTO.setEmail("teste@gmail.com");
         clienteDTO.setCodigoPessoa("123456789");
 
-        Mockito.when(clienteService.cadastraCliente(clienteDTO)).thenThrow(new ClienteCadastradoException("Cliente já cadastrado"));
+        Mockito.when(clienteService.cadastraCliente(clienteDTO)).thenThrow(new UsuarioCadastradoException("Cliente já cadastrado"));
 
-        ClienteCadastradoException exception = assertThrows(
-                ClienteCadastradoException.class, () -> clienteService.cadastraCliente(clienteDTO));
+        UsuarioCadastradoException exception = assertThrows(
+                UsuarioCadastradoException.class, () -> clienteService.cadastraCliente(clienteDTO));
 
         assertEquals("Cliente já cadastrado", exception.getMessage());
     }
@@ -92,9 +92,9 @@ import static org.junit.jupiter.api.Assertions.*;
         cliente.setEmail("teste@gmail.com");
         cliente.setCodigoPessoa("123456789");
 
-        Mockito.when(usuarioRepository.findByUsuarioDoTipoCliente("123456789")).thenThrow(new ClienteNaoExisteException("Cliente não existe"));
+        Mockito.when(usuarioRepository.findByUsuarioDoTipoCliente("123456789")).thenThrow(new UsuarioNaoExisteException("Cliente não existe"));
 
-        ClienteNaoExisteException exception = assertThrows(ClienteNaoExisteException.class, () -> clienteService.consultaCliente("123456789"));
+        UsuarioNaoExisteException exception = assertThrows(UsuarioNaoExisteException.class, () -> clienteService.consultaCliente("123456789"));
 
 
         assertEquals("Cliente não existe",exception.getMessage());
@@ -116,9 +116,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
     @Test
     void erroDeClienteNaoLocalizadoAoDeletarUsuarioNaBase() {
-        Mockito.when(usuarioRepository.findByUsuarioDoTipoCliente("123456789")).thenThrow(new ClienteNaoExisteException("Cliente não existe"));
+        Mockito.when(usuarioRepository.findByUsuarioDoTipoCliente("123456789")).thenThrow(new UsuarioNaoExisteException("Cliente não existe"));
 
-        ClienteNaoExisteException exception = assertThrows(ClienteNaoExisteException.class, () -> clienteService.deletaCliente("123456789"));
+        UsuarioNaoExisteException exception = assertThrows(UsuarioNaoExisteException.class, () -> clienteService.deletaCliente("123456789"));
 
         assertEquals("Cliente não existe", exception.getMessage());
         Mockito.verify(usuarioRepository, Mockito.times(1)).findByUsuarioDoTipoCliente("123456789");
