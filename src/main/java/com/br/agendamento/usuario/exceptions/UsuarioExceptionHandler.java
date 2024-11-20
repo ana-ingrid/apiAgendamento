@@ -1,4 +1,4 @@
-package com.br.agendamento.cliente.exceptions;
+package com.br.agendamento.usuario.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class UsuarioExceptionHandler {
 
-    @ExceptionHandler(ClienteCadastradoException.class)
-    public ResponseEntity<String> clienteCadastradoException(ClienteCadastradoException e){
+    @ExceptionHandler(UsuarioCadastradoException.class)
+    public ResponseEntity<String> clienteCadastradoException(UsuarioCadastradoException e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
 
-    @ExceptionHandler(ClienteNaoExisteException.class)
-    public ResponseEntity<String> clienteNaoExisteException(ClienteNaoExisteException e){
+    @ExceptionHandler(UsuarioNaoExisteException.class)
+    public ResponseEntity<String> clienteNaoExisteException(UsuarioNaoExisteException e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
