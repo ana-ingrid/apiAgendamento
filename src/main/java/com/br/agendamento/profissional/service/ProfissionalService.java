@@ -41,5 +41,14 @@ public class ProfissionalService {
         return profissional;
     }
 
+    public Profissional alteraProfissional(AlteraProfissionalDTO alteraProfissionalDTO, String codigo){
+        Profissional profissional = usuarioRepository.findByUsuarioDoTipoProfissional(codigo);
+
+        if (Objects.nonNull(alteraProfissionalDTO.getDataNascimento()))profissional.setDataNascimento(alteraProfissionalDTO.getDataNascimento());
+        if (Objects.nonNull(alteraProfissionalDTO.getNome()))profissional.setNome(alteraProfissionalDTO.getNome());
+        if (Objects.nonNull(alteraProfissionalDTO.getEmail()))profissional.setEmail(alteraProfissionalDTO.getEmail());
+        return profissional;
+    }
+
 
 }
