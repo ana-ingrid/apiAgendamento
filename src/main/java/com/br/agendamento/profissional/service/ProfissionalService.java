@@ -34,5 +34,12 @@ public class ProfissionalService {
         return usuarioRepository.save(profissional);
     }
 
+    public Profissional consultaProfissional(String codigoPessoa){
+        Profissional profissional = usuarioRepository.findByUsuarioDoTipoProfissional(codigoPessoa);
+        if (Objects.isNull(profissional))
+            throw new UsuarioNaoExisteException(MensagensDeErros.PROFISSIONALNAOEXISTE.getDescricao());
+        return profissional;
+    }
 
-  }
+
+}
