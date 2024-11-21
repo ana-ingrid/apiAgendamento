@@ -1,8 +1,8 @@
 package com.br.agendamento.cliente.service;
 
 
-import com.br.agendamento.cliente.exceptions.ClienteCadastradoException;
-import com.br.agendamento.cliente.exceptions.ClienteNaoExisteException;
+import com.br.agendamento.usuario.exceptions.UsuarioCadastradoException;
+import com.br.agendamento.usuario.exceptions.UsuarioNaoExisteException;
 import com.br.agendamento.cliente.model.Cliente;
 import com.br.agendamento.cliente.model.dtos.AlteraClienteDTO;
 import com.br.agendamento.cliente.model.dtos.CadastraClienteDTO;
@@ -13,7 +13,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -33,11 +32,11 @@ public class ClienteService {
     public Cliente cadastraCliente(CadastraClienteDTO cliente){
         String codigo = cliente.getCodigoPessoa();
         if (Objects.nonNull(usuarioRepository.findByUsuarioDoTipoCliente(codigo))){
-            throw new ClienteCadastradoException(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao());
+            throw new UsuarioCadastradoException(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao());
         }
 
         if (Boolean.FALSE.equals(consultaSeUsuarioClienteNaoExiste(codigo))){
-            throw new ClienteCadastradoException(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao());
+            throw new UsuarioCadastradoException(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao());
         }
 
         Cliente clienteMapeado = modelMapper.map(cliente, Cliente.class);
@@ -48,14 +47,14 @@ public class ClienteService {
     public Cliente consultaCliente(String codigo){
         Cliente cliente = usuarioRepository.findByUsuarioDoTipoCliente(codigo);
         if (Objects.isNull(cliente)){
-            throw new ClienteNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao());
+            throw new UsuarioNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao());
         }
         return cliente;
     }
 
     public Cliente alteraCliente(AlteraClienteDTO clienteDTO, String codigo){
         Cliente cliente = usuarioRepository.findByUsuarioDoTipoCliente(codigo);
-        if (Objects.isNull(cliente)) throw new ClienteNaoExisteException("Cliente não existe");
+        if (Objects.isNull(cliente)) throw new UsuarioNaoExisteException("Cliente não existe");
 
         if (clienteDTO.getNome() != null) cliente.setNome(clienteDTO.getNome());
         if (clienteDTO.getEmail() != null) cliente.setEmail(clienteDTO.getEmail());
@@ -67,7 +66,7 @@ public class ClienteService {
     public void deletaCliente(String codigo){
         Cliente cliente = usuarioRepository.findByUsuarioDoTipoCliente(codigo);
         if (Objects.isNull(cliente)){
-            throw new ClienteNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao());
+            throw new UsuarioNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao());
         }
         usuarioRepository.delete(cliente);
     }
