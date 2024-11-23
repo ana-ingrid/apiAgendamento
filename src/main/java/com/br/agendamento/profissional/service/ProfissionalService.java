@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @AllArgsConstructor
@@ -50,5 +51,10 @@ public class ProfissionalService {
         return profissional;
     }
 
+    public void deletaProfissional(String codigoPessoa){
+        Profissional profissional = usuarioRepository.findByUsuarioDoTipoProfissional(codigoPessoa);
+        if (Objects.isNull(profissional))throw new UsuarioNaoExisteException(MensagensDeErros.PROFISSIONALNAOEXISTE.getDescricao());
+        usuarioRepository.delete(profissional);
+    }
 
 }
