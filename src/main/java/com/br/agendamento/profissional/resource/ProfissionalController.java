@@ -25,5 +25,10 @@ public class ProfissionalController {
         return ResponseEntity.status(201).body(profissionalService.cadastraProfissional(cadastraProfissionalDTO));
     }
 
+    @GetMapping("{codigo}")
+    public ResponseEntity<Profissional> consultaProfissional(@PathVariable String codigoPessoa){
+        return ResponseEntity.status(200).body(profissionalService.consultaProfissional(codigoPessoa));
+    }
+
 
 }
