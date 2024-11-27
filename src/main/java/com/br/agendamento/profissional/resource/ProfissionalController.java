@@ -30,5 +30,10 @@ public class ProfissionalController {
         return ResponseEntity.status(200).body(profissionalService.consultaProfissional(codigoPessoa));
     }
 
+    @PutMapping("{codigo}")
+    public ResponseEntity<Profissional> alteraProfissional( @Valid @RequestBody AlteraProfissionalDTO alteraProfissionalDTO, @PathVariable String codigo){
+        return ResponseEntity.status(200).body(profissionalService.alteraProfissional(alteraProfissionalDTO, codigo));
+    }
+
 
 }
