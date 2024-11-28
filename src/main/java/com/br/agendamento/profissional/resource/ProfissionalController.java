@@ -35,5 +35,10 @@ public class ProfissionalController {
         return ResponseEntity.status(200).body(profissionalService.alteraProfissional(alteraProfissionalDTO, codigo));
     }
 
+    @DeleteMapping("{codigo}")
+    public ResponseEntity<Profissional> deletaProfissional(@PathVariable String codigoPessoa){
+        profissionalService.deletaProfissional(codigoPessoa);
+        return ResponseEntity.noContent().build();
+    }
 
 }
