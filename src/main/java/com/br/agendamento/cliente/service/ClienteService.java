@@ -25,7 +25,7 @@ public class ClienteService {
 
 
     public Boolean consultaSeUsuarioClienteNaoExiste(String codigo){
-        Cliente tipoUsuario = usuarioRepository.findByCLientePeloCodigoPessoa(codigo);
+        String tipoUsuario = usuarioRepository.findByCLientePeloCodigoPessoa(codigo);
         return !Objects.isNull(tipoUsuario);
     }
 

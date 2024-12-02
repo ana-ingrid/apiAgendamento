@@ -12,13 +12,13 @@ import org.springframework.stereotype.Repository;
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
      @Query(value = "SELECT u.tipo_usuario FROM usuario u WHERE u.tipo_usuario IN ('CLIENTE') AND u.codigo_pessoa = :codigo", nativeQuery = true)
-     Cliente findByCLientePeloCodigoPessoa(@Param("codigo") String codigo);
+     String findByCLientePeloCodigoPessoa(@Param("codigo") String codigo);
 
      @Query(value = "SELECT * FROM usuario u WHERE u.tipo_usuario IN ('CLIENTE') AND codigo_pessoa = :codigo", nativeQuery = true)
      Cliente findByUsuarioDoTipoCliente(@Param("codigo") String codigo);
 
      @Query(value = "SELECT u.tipo_usuario FROM usuario u WHERE u.tipo_usuario IN ('PROFISSIONAL') AND u.codigo_pessoa = :codigo", nativeQuery = true)
-     Profissional findByProfissionalPeloCodigoPessoa(@Param("codigo") String codigo);
+     String findByProfissionalPeloCodigoPessoa(@Param("codigo") String codigo);
 
      @Query(value = "SELECT * FROM usuario u WHERE u.tipo_usuario IN ('PROFISSIONAL') AND codigo_pessoa = :codigo", nativeQuery = true)
      Profissional findByUsuarioDoTipoProfissional(@Param("codigo") String codigo);
