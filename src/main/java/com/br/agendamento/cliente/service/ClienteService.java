@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -26,7 +27,7 @@ public class ClienteService {
 
     public Boolean consultaSeUsuarioClienteNaoExiste(String codigo){
         String tipoUsuario = usuarioRepository.findByCLientePeloCodigoPessoa(codigo);
-        return !Objects.isNull(tipoUsuario);
+        return Objects.isNull(tipoUsuario);
     }
 
     public Cliente cadastraCliente(CadastraClienteDTO cliente){
@@ -50,6 +51,10 @@ public class ClienteService {
             throw new UsuarioNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao());
         }
         return cliente;
+    }
+
+    public List<Cliente> consultaTodosClientes(){
+        return usuarioRepository.findByTodosUsuarioDoTipoCliente();
     }
 
     public Cliente alteraCliente(AlteraClienteDTO clienteDTO, String codigo){
