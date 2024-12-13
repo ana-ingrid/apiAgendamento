@@ -11,6 +11,8 @@ import java.time.LocalDate;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Getter
 @Setter
+@Table(name = "usuario", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"codigo_pessoa", "tipo_usuario"})})
 public abstract class Usuario {
 
     @Id
@@ -24,6 +26,6 @@ public abstract class Usuario {
     @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
 
-    @Column(name = "codigo_pessoa", unique = true)
+    @Column(name = "codigo_pessoa")
     private String codigoPessoa;
 }
