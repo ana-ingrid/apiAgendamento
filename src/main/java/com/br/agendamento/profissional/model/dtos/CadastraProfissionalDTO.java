@@ -1,6 +1,5 @@
 package com.br.agendamento.profissional.model.dtos;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -23,17 +22,16 @@ public class CadastraProfissionalDTO {
 
     @NotNull(message = "Email obrigatório")
     @Email
-    @Size(min = 10, max = 50)
+    @Size(min = 10, max = 100)
     private String email;
 
-    @NotNull(message = "Data de nascimento obrigatório")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    @NotNull(message = "Data de nascimento obrigatória")
     private LocalDate dataNascimento;
 
     @NotNull(message = "CPF obrigatório")
     @CPF
     @Size(min = 11, max = 11)
-    @Pattern(regexp = "^[1-9]+$", message = "CPF inválido")
+    @Pattern(regexp = "^[0-9]+$", message = "O código deve conter apenas números")
     private String codigoPessoa;
 
 
