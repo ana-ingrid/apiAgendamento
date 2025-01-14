@@ -7,10 +7,6 @@ import com.br.agendamento.profissional.model.dtos.CadastraProfissionalDTO;
 import com.br.agendamento.profissional.service.ProfissionalService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,25 +19,15 @@ public class ProfissionalController {
     private ProfissionalService profissionalService;
 
 
-    @PostMapping(value = "{codigo}")
+    @PostMapping
     public ResponseEntity<Profissional> cadastraProfissional(@Valid @RequestBody CadastraProfissionalDTO cadastraProfissionalDTO){
         return ResponseEntity.status(201).body(profissionalService.cadastraProfissional(cadastraProfissionalDTO));
     }
 
     @GetMapping("{codigo}")
-    public ResponseEntity<Profissional> consultaProfissional(@PathVariable String codigoPessoa){
-        return ResponseEntity.status(200).body(profissionalService.consultaProfissional(codigoPessoa));
+    public ResponseEntity<Profissional> consultaProfissional(@PathVariable String codigo){
+        return ResponseEntity.status(200).body(profissionalService.consultaProfissional(codigo));
     }
-
-    @GetMapping
-    public ResponseEntity<Page<Profissional>> filtraProfissional(@RequestParam(required = true) String nome,
-                                                                 @RequestParam(defaultValue = "0") int page,
-                                                                 @RequestParam(defaultValue = "10") int size,
-                                                                 @RequestParam(defaultValue = "id") String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
-        return ResponseEntity.ok(profissionalService.filtraProfissional(nome, pageable));
-    }
-
 
     @PutMapping("{codigo}")
     public ResponseEntity<Profissional> alteraProfissional( @Valid @RequestBody AlteraProfissionalDTO alteraProfissionalDTO, @PathVariable String codigo){
@@ -49,8 +35,8 @@ public class ProfissionalController {
     }
 
     @DeleteMapping("{codigo}")
-    public ResponseEntity<Profissional> deletaProfissional(@PathVariable String codigoPessoa){
-        profissionalService.deletaProfissional(codigoPessoa);
+    public ResponseEntity<Profissional> deletaProfissional(@PathVariable String codigo){
+        profissionalService.deletaProfissional(codigo);
         return ResponseEntity.noContent().build();
     }
 
