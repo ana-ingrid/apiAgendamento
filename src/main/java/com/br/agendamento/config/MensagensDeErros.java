@@ -9,8 +9,8 @@ public enum MensagensDeErros {
 
     CLIENTENAOEXISTE("Cliente não existe"),
     CLIENTEJACADASTRADO("Cliente já cadastrado"),
-    PROFISSIONALJACADASTRADO("Profissional não existe"),
-    PROFISSIONALNAOEXISTE("Profissional já cadastrado");
+    PROFISSIONALJACADASTRADO("Profissional já cadastrado"),
+    PROFISSIONALNAOEXISTE("Profissional não existe");
 
     final String descricao;
 
