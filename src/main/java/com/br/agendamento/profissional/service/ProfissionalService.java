@@ -46,7 +46,7 @@ public class ProfissionalService {
         if (Objects.nonNull(alteraProfissionalDTO.getDataNascimento()))profissional.setDataNascimento(alteraProfissionalDTO.getDataNascimento());
         if (Objects.nonNull(alteraProfissionalDTO.getNome()))profissional.setNome(alteraProfissionalDTO.getNome());
         if (Objects.nonNull(alteraProfissionalDTO.getEmail()))profissional.setEmail(alteraProfissionalDTO.getEmail());
-        return profissional;
+        return usuarioRepository.save(profissional);
     }
 
     public void deletaProfissional(String codigoPessoa){
