@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @AllArgsConstructor
@@ -21,7 +22,7 @@ public class ProfissionalService {
     private ModelMapper modelMapper;
 
     public boolean consultaSeProfissionalExiste(String codigoPessoa){
-         Profissional buscaProfissional = usuarioRepository.findByUsuarioDoTipoProfissional(codigoPessoa);
+         Profissional buscaProfissional = usuarioRepository.findByProfissional(codigoPessoa);
         return !Objects.isNull(buscaProfissional);
     }
 
@@ -34,14 +35,18 @@ public class ProfissionalService {
     }
 
     public Profissional consultaProfissional(String codigoPessoa){
-        Profissional profissional = usuarioRepository.findByUsuarioDoTipoProfissional(codigoPessoa);
+        Profissional profissional = usuarioRepository.findByProfissional(codigoPessoa);
         if (Objects.isNull(profissional))
             throw new UsuarioNaoExisteException(MensagensDeErros.PROFISSIONALNAOEXISTE.getDescricao());
         return profissional;
     }
 
+    public List<Profissional> consultaTodosProfissionais(){
+        return usuarioRepository.findByTodosUsuarioDoTipoProfissional();
+    }
+
     public Profissional alteraProfissional(AlteraProfissionalDTO alteraProfissionalDTO, String codigo){
-        Profissional profissional = usuarioRepository.findByUsuarioDoTipoProfissional(codigo);
+        Profissional profissional = usuarioRepository.findByProfissional(codigo);
 
         if (Objects.nonNull(alteraProfissionalDTO.getDataNascimento()))profissional.setDataNascimento(alteraProfissionalDTO.getDataNascimento());
         if (Objects.nonNull(alteraProfissionalDTO.getNome()))profissional.setNome(alteraProfissionalDTO.getNome());
@@ -50,7 +55,7 @@ public class ProfissionalService {
     }
 
     public void deletaProfissional(String codigoPessoa){
-        Profissional profissional = usuarioRepository.findByUsuarioDoTipoProfissional(codigoPessoa);
+        Profissional profissional = usuarioRepository.findByProfissional(codigoPessoa);
         if (Objects.isNull(profissional))throw new UsuarioNaoExisteException(MensagensDeErros.PROFISSIONALNAOEXISTE.getDescricao());
         usuarioRepository.delete(profissional);
     }

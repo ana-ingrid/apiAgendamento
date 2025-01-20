@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/profissional")
 @AllArgsConstructor
@@ -29,6 +31,11 @@ public class ProfissionalController {
         return ResponseEntity.status(200).body(profissionalService.consultaProfissional(codigo));
     }
 
+    @GetMapping
+    public ResponseEntity<List<Profissional>> consultaTodosProfissionais(){
+        return ResponseEntity.status(200).body(profissionalService.consultaTodosProfissionais());
+    }
+
     @PutMapping("{codigo}")
     public ResponseEntity<Profissional> alteraProfissional( @Valid @RequestBody AlteraProfissionalDTO alteraProfissionalDTO, @PathVariable String codigo){
         return ResponseEntity.status(200).body(profissionalService.alteraProfissional(alteraProfissionalDTO, codigo));
@@ -39,6 +46,5 @@ public class ProfissionalController {
         profissionalService.deletaProfissional(codigo);
         return ResponseEntity.noContent().build();
     }
-
 
 }
