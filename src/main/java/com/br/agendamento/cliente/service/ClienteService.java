@@ -26,13 +26,13 @@ public class ClienteService {
 
 
     public Boolean consultaSeUsuarioClienteNaoExiste(String codigo){
-        String tipoUsuario = usuarioRepository.findByCLientePeloCodigoPessoa(codigo);
+        Cliente tipoUsuario = usuarioRepository.findByCliente(codigo);
         return Objects.isNull(tipoUsuario);
     }
 
     public Cliente cadastraCliente(CadastraClienteDTO cliente){
         String codigo = cliente.getCodigoPessoa();
-        if (Objects.nonNull(usuarioRepository.findByUsuarioDoTipoCliente(codigo))){
+        if (Objects.nonNull(usuarioRepository.findByCliente(codigo))){
             throw new UsuarioCadastradoException(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao());
         }
 
@@ -46,7 +46,7 @@ public class ClienteService {
 
 
     public Cliente consultaCliente(String codigo){
-        Cliente cliente = usuarioRepository.findByUsuarioDoTipoCliente(codigo);
+        Cliente cliente = usuarioRepository.findByCliente(codigo);
         if (Objects.isNull(cliente)){
             throw new UsuarioNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao());
         }
@@ -58,7 +58,7 @@ public class ClienteService {
     }
 
     public Cliente alteraCliente(AlteraClienteDTO clienteDTO, String codigo){
-        Cliente cliente = usuarioRepository.findByUsuarioDoTipoCliente(codigo);
+        Cliente cliente = usuarioRepository.findByCliente(codigo);
         if (Objects.isNull(cliente)) throw new UsuarioNaoExisteException("Cliente não existe");
 
         if (clienteDTO.getNome() != null) cliente.setNome(clienteDTO.getNome());
@@ -69,7 +69,7 @@ public class ClienteService {
     }
 
     public void deletaCliente(String codigo){
-        Cliente cliente = usuarioRepository.findByUsuarioDoTipoCliente(codigo);
+        Cliente cliente = usuarioRepository.findByCliente(codigo);
         if (Objects.isNull(cliente)){
             throw new UsuarioNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao());
         }
