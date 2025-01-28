@@ -1,6 +1,7 @@
 package com.br.agendamento.cliente.services;
 
 
+import com.br.agendamento.config.MensagensDeErros;
 import com.br.agendamento.usuario.exceptions.UsuarioCadastradoException;
 import com.br.agendamento.usuario.exceptions.UsuarioNaoExisteException;
 import com.br.agendamento.cliente.model.Cliente;
@@ -61,7 +62,7 @@ import static org.junit.jupiter.api.Assertions.*;
         clienteDTO.setEmail("teste@gmail.com");
         clienteDTO.setCodigoPessoa("123456789");
 
-        Mockito.when(clienteService.cadastraCliente(clienteDTO)).thenThrow(new UsuarioCadastradoException("Cliente já cadastrado"));
+        Mockito.when(clienteService.cadastraCliente(clienteDTO)).thenThrow(new UsuarioCadastradoException(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao()));
 
         UsuarioCadastradoException exception = assertThrows(
                 UsuarioCadastradoException.class, () -> clienteService.cadastraCliente(clienteDTO));
@@ -92,7 +93,7 @@ import static org.junit.jupiter.api.Assertions.*;
         cliente.setEmail("teste@gmail.com");
         cliente.setCodigoPessoa("123456789");
 
-        Mockito.when(usuarioRepository.findByCliente("123456789")).thenThrow(new UsuarioNaoExisteException("Cliente não existe"));
+        Mockito.when(usuarioRepository.findByCliente("123456789")).thenThrow(new UsuarioNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao()));
 
         UsuarioNaoExisteException exception = assertThrows(UsuarioNaoExisteException.class, () -> clienteService.consultaCliente("123456789"));
 
@@ -116,7 +117,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
     @Test
     void erroDeClienteNaoLocalizadoAoDeletarUsuarioNaBase() {
-        Mockito.when(usuarioRepository.findByCliente("123456789")).thenThrow(new UsuarioNaoExisteException("Cliente não existe"));
+        Mockito.when(usuarioRepository.findByCliente("123456789")).thenThrow(new UsuarioNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao()));
 
         UsuarioNaoExisteException exception = assertThrows(UsuarioNaoExisteException.class, () -> clienteService.deletaCliente("123456789"));
 
