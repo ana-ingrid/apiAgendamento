@@ -1,4 +1,7 @@
 # Sistema de Agendamento 📅
+
+**Arquitetura:** Uma aplicação monolítica modular, com o padrão MVC que segue os princípios do Domain-Driven Design (DDD).
+
 **Objetivo:** Desenvolver um sistema de agendamento online que permita aos usuários marcar serviços ou procedimentos com profissionais de forma totalmente virtual. O sistema deve incluir a opção de pagamento antecipado de 10% do valor total do serviço, com a política de reembolso não aplicável para cancelamentos feitos dentro das 24 horas anteriores à data agendada.
 
 
