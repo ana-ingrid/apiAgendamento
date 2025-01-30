@@ -1,16 +1,16 @@
 package com.br.agendamento.usuario.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 
 @Entity
 @DiscriminatorColumn(name = "tipo_usuario", discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Getter
-@Setter
+@Data
+@SuperBuilder
 @Table(name = "usuario", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"codigo_pessoa", "tipo_usuario"})})
 public abstract class Usuario {
