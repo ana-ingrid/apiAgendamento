@@ -1,8 +1,10 @@
 package com.br.agendamento.profissional.services;
 
+import com.br.agendamento.config.MensagensDeErros;
 import com.br.agendamento.profissional.model.Profissional;
 import com.br.agendamento.profissional.model.dtos.CadastraProfissionalDTO;
 import com.br.agendamento.profissional.service.ProfissionalService;
+import com.br.agendamento.usuario.exceptions.UsuarioCadastradoException;
 import com.br.agendamento.usuario.repository.UsuarioRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -11,8 +13,9 @@ import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class profissionalServiceTest {
@@ -30,16 +33,8 @@ class profissionalServiceTest {
     @Test
     void cadastraProfissionalComSucessoNaBase() {
 
-
-        CadastraProfissionalDTO profissionalDTO = new CadastraProfissionalDTO();
-        profissionalDTO.setNome("teste");
-        profissionalDTO.setCodigoPessoa("123456789");
-        profissionalDTO.setEmail("teste@gmail.com");
-
-        Profissional profissional = new Profissional();
-        profissional.setNome("teste");
-        profissional.setCodigoPessoa("123456789");
-        profissional.setEmail("teste@gmail.com");
+        CadastraProfissionalDTO profissionalDTO = objetoDeProfissionalDTO();
+        Profissional profissional = objetoDeProfissional();
 
         Mockito.when(usuarioRepository.findByProfissional(profissionalDTO.getCodigoPessoa())).thenReturn(null);
         Mockito.when(modelMapper.map(profissionalDTO, Profissional.class)).thenReturn(profissional);
@@ -52,6 +47,41 @@ class profissionalServiceTest {
        assertNotNull(resultado);
     }
 
+    @Test
+    void erroAoTentarCadastrarProfissionalJaExistenteNaBase(){
+
+        CadastraProfissionalDTO profissionalDTO = objetoDeProfissionalDTO();
+
+        Mockito.when(usuarioRepository.findByProfissional(profissionalDTO.getCodigoPessoa()))
+                .thenThrow(new UsuarioCadastradoException(MensagensDeErros.PROFISSIONALJACADASTRADO.getDescricao()));
+
+        UsuarioCadastradoException exception = assertThrows(
+                UsuarioCadastradoException.class, () -> profissionalService.cadastraProfissional(profissionalDTO));
+
+        assertEquals("Profissional já cadastrado", exception.getMessage());
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(profissionalDTO.getCodigoPessoa());
+    }
+
+
+    Profissional objetoDeProfissional(){
+        return Profissional.builder()
+                .nome("teste")
+                .email("teste@gmail.com")
+                .codigoPessoa("123456789")
+                .dataNascimento(LocalDate.parse("2003-04-22"))
+                .build();
+
+    }
+
+    CadastraProfissionalDTO objetoDeProfissionalDTO(){
+        return CadastraProfissionalDTO.builder()
+                .nome("teste")
+                .email("teste@gmail.com")
+                .codigoPessoa("123456789")
+                .dataNascimento(LocalDate.parse("2003-04-22"))
+                .build();
+
+    }
 
 
 }
