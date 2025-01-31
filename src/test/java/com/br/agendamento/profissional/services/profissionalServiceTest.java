@@ -5,6 +5,7 @@ import com.br.agendamento.profissional.model.Profissional;
 import com.br.agendamento.profissional.model.dtos.CadastraProfissionalDTO;
 import com.br.agendamento.profissional.service.ProfissionalService;
 import com.br.agendamento.usuario.exceptions.UsuarioCadastradoException;
+import com.br.agendamento.usuario.exceptions.UsuarioNaoExisteException;
 import com.br.agendamento.usuario.repository.UsuarioRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -61,6 +62,56 @@ class profissionalServiceTest {
         assertEquals("Profissional já cadastrado", exception.getMessage());
         Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(profissionalDTO.getCodigoPessoa());
     }
+
+    @Test
+    void consultaProfissionalJaCadastradoNaBase(){
+
+        Profissional profissional = objetoDeProfissional();
+
+        String codigoPessoa = "123456789";
+
+       Mockito.when(usuarioRepository.findByProfissional(codigoPessoa)).thenReturn(profissional);
+
+       Profissional resultado = profissionalService.consultaProfissional(codigoPessoa);
+
+       assertNotNull(resultado);
+       Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(codigoPessoa);
+       assertEquals(resultado.getCodigoPessoa(), codigoPessoa);
+
+    }
+
+
+    @Test
+    void erroAoConsultarProfissionalQueNaoExisteNaBase() {
+
+        String codigoPessoa = "123456789";
+
+        Mockito.when(usuarioRepository.findByProfissional(codigoPessoa)).thenThrow(new UsuarioNaoExisteException(MensagensDeErros.PROFISSIONALNAOEXISTE.getDescricao()));
+
+        UsuarioNaoExisteException exception = assertThrows(
+                UsuarioNaoExisteException.class, () -> profissionalService.consultaProfissional(codigoPessoa));
+
+        assertEquals(MensagensDeErros.PROFISSIONALNAOEXISTE.getDescricao(), exception.getMessage());
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(codigoPessoa);
+
+    }
+
+
+    @Test
+    void deletaProfissionalNaBaseComSucesso() {
+
+        Profissional profissional = objetoDeProfissional();
+        String codigoPessoa = "123456789";
+
+        Mockito.when(usuarioRepository.findByProfissional(codigoPessoa)).thenReturn(profissional);
+        Mockito.doNothing().when(usuarioRepository).delete(profissional);
+
+        profissionalService.deletaProfissional(codigoPessoa);
+
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(codigoPessoa);
+        Mockito.verify(usuarioRepository, Mockito.times(1)).delete(profissional);
+    }
+
 
 
     Profissional objetoDeProfissional(){
