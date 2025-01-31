@@ -47,6 +47,20 @@ class profissionalServiceTest {
        assertNotNull(resultado);
     }
 
+    @Test
+    void erroAoTentarCadastrarProfissionalJaExistenteNaBase(){
+
+        CadastraProfissionalDTO profissionalDTO = objetoDeProfissionalDTO();
+
+        Mockito.when(usuarioRepository.findByProfissional(profissionalDTO.getCodigoPessoa()))
+                .thenThrow(new UsuarioCadastradoException(MensagensDeErros.PROFISSIONALJACADASTRADO.getDescricao()));
+
+        UsuarioCadastradoException exception = assertThrows(
+                UsuarioCadastradoException.class, () -> profissionalService.cadastraProfissional(profissionalDTO));
+
+        assertEquals("Profissional já cadastrado", exception.getMessage());
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(profissionalDTO.getCodigoPessoa());
+    }
 
 
     Profissional objetoDeProfissional(){
