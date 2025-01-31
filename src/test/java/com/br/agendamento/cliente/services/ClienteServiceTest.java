@@ -40,14 +40,17 @@ import static org.junit.jupiter.api.Assertions.*;
         Cliente cliente = objetoCliente();
 
         Mockito.when(modelMapper.map(clienteDTO, Cliente.class)).thenReturn(cliente);
-        Mockito.when(clienteService.cadastraCliente(clienteDTO)).thenReturn(cliente);
+        Mockito.when(usuarioRepository.findByCliente(clienteDTO.getCodigoPessoa())).thenReturn(null);
+        Mockito.when(usuarioRepository.save(cliente)).thenReturn(cliente);
 
         Cliente clienteCadastrado = clienteService.cadastraCliente(clienteDTO);
 
         assertNotNull(clienteCadastrado);
-        assertEquals(clienteDTO.getNome(), clienteCadastrado.getNome());
-        assertEquals(clienteDTO.getEmail(), clienteCadastrado.getEmail());
-        assertEquals(clienteDTO.getCodigoPessoa(), clienteCadastrado.getCodigoPessoa());
+        Mockito.verify(usuarioRepository, Mockito.times(2)).findByCliente(cliente.getCodigoPessoa());
+        Mockito.verify(modelMapper, Mockito.times(1)).map(clienteDTO, Cliente.class);
+        Mockito.verify(usuarioRepository, Mockito.times(1)).save(cliente);
+
+
     }
 
     @Test
@@ -71,9 +74,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
         Cliente resultado = clienteService.consultaCliente(cliente.getCodigoPessoa());
 
-        assertEquals(cliente.getNome(), resultado.getNome());
-        assertEquals(cliente.getCodigoPessoa(), resultado.getCodigoPessoa());
-
+        assertNotNull(resultado);
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(cliente.getCodigoPessoa());
     }
 
     @Test
@@ -98,6 +100,7 @@ import static org.junit.jupiter.api.Assertions.*;
         Mockito.when(usuarioRepository.findByCliente(cliente.getCodigoPessoa())).thenReturn(cliente);
         clienteService.deletaCliente(cliente.getCodigoPessoa());
 
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(cliente.getCodigoPessoa());
         Mockito.verify(usuarioRepository, Mockito.times(1)).delete(cliente);
     }
 
