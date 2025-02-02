@@ -99,7 +99,6 @@ class profissionalServiceTest {
 
     @Test
     void deletaProfissionalNaBaseComSucesso() {
-
         Profissional profissional = objetoDeProfissional();
         String codigoPessoa = "123456789";
 
@@ -110,6 +109,21 @@ class profissionalServiceTest {
 
         Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(codigoPessoa);
         Mockito.verify(usuarioRepository, Mockito.times(1)).delete(profissional);
+    }
+
+    @Test
+    void erroAoTentarDeletarProfissionalQueNaoExisteNaBase(){
+        String codigoPessoa = "123456789";
+
+        Mockito.when(usuarioRepository.findByProfissional(codigoPessoa))
+                .thenThrow(new UsuarioNaoExisteException(MensagensDeErros.PROFISSIONALNAOEXISTE.getDescricao()));
+
+        UsuarioNaoExisteException exception = assertThrows(
+                UsuarioNaoExisteException.class, () -> profissionalService.deletaProfissional(codigoPessoa));
+
+        assertEquals( MensagensDeErros.PROFISSIONALNAOEXISTE.getDescricao(), exception.getMessage());
+        Mockito.verify(usuarioRepository, Mockito.times( 0)).delete(Mockito.any(Profissional.class));
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(codigoPessoa);
     }
 
 
