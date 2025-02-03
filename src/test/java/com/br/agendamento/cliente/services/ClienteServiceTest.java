@@ -1,13 +1,14 @@
 package com.br.agendamento.cliente.services;
 
 
+import com.br.agendamento.cliente.model.Cliente;
+import com.br.agendamento.cliente.model.dtos.AlteraClienteDTO;
+import com.br.agendamento.cliente.model.dtos.CadastraClienteDTO;
+import com.br.agendamento.cliente.service.ClienteService;
 import com.br.agendamento.config.MensagensDeErros;
 import com.br.agendamento.usuario.exceptions.UsuarioCadastradoException;
 import com.br.agendamento.usuario.exceptions.UsuarioNaoExisteException;
-import com.br.agendamento.cliente.model.Cliente;
-import com.br.agendamento.cliente.model.dtos.CadastraClienteDTO;
 import com.br.agendamento.usuario.repository.UsuarioRepository;
-import com.br.agendamento.cliente.service.ClienteService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -91,6 +92,26 @@ import static org.junit.jupiter.api.Assertions.*;
         Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(codigoPessoa);
     }
 
+    @Test
+    void alteraTodosOsDadosDeClienteComSucesso(){
+
+        Cliente cliente = objetoCliente();
+        String codigoPessoa = "123456789";
+        AlteraClienteDTO alteraClienteDTO = objetoDeAlteraClienteDTO();
+
+        Mockito.when(usuarioRepository.findByCliente(codigoPessoa)).thenReturn(cliente);
+        Mockito.when(usuarioRepository.save(Mockito.any(Cliente.class))).
+                thenAnswer(invocation -> invocation.getArgument(0));
+
+        Cliente resultado = clienteService.alteraCliente(alteraClienteDTO,codigoPessoa);
+
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(codigoPessoa);
+        Mockito.verify(usuarioRepository, Mockito.times(1)).save(cliente);
+        assertEquals(resultado.getNome(),alteraClienteDTO.getNome());
+        assertEquals(resultado.getEmail(),alteraClienteDTO.getEmail());
+        assertEquals(resultado.getDataNascimento(),alteraClienteDTO.getDataNascimento());
+    }
+
 
     @Test
     void deletaClienteComSucessoNaBase() {
@@ -130,6 +151,14 @@ import static org.junit.jupiter.api.Assertions.*;
                 .nome("teste")
                 .email("teste@gmail.com")
                 .codigoPessoa("123456789")
+                .dataNascimento(LocalDate.parse("2003-04-22"))
+                .build();
+    }
+
+    AlteraClienteDTO objetoDeAlteraClienteDTO(){
+        return AlteraClienteDTO.builder()
+                .nome("AlteraTeste")
+                .email("emailalterado@gmail.com")
                 .dataNascimento(LocalDate.parse("2003-04-22"))
                 .build();
     }
