@@ -2,6 +2,7 @@ package com.br.agendamento.profissional.services;
 
 import com.br.agendamento.config.MensagensDeErros;
 import com.br.agendamento.profissional.model.Profissional;
+import com.br.agendamento.profissional.model.dtos.AlteraProfissionalDTO;
 import com.br.agendamento.profissional.model.dtos.CadastraProfissionalDTO;
 import com.br.agendamento.profissional.service.ProfissionalService;
 import com.br.agendamento.usuario.exceptions.UsuarioCadastradoException;
@@ -96,10 +97,29 @@ class profissionalServiceTest {
 
     }
 
+    @Test
+    void alteraTodosOsDadosDeProfissionalComSucesso(){
+
+        Profissional profissional = objetoDeProfissional();
+        String codigoPessoa = "123456789";
+        AlteraProfissionalDTO alteraProfissionalDTO = objetoDeAlteraProfissionalDTO();
+
+        Mockito.when(usuarioRepository.findByProfissional(codigoPessoa)).thenReturn(profissional);
+        Mockito.when(usuarioRepository.save(Mockito.any(Profissional.class))).
+                thenAnswer(invocation -> invocation.getArgument(0));
+
+        Profissional resultado = profissionalService.alteraProfissional(alteraProfissionalDTO,codigoPessoa);
+
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(codigoPessoa);
+        Mockito.verify(usuarioRepository, Mockito.times(1)).save(profissional);
+        assertEquals(resultado.getNome(),alteraProfissionalDTO.getNome());
+        assertEquals(resultado.getEmail(),alteraProfissionalDTO.getEmail());
+        assertEquals(resultado.getDataNascimento(),alteraProfissionalDTO.getDataNascimento());
+    }
+
 
     @Test
     void deletaProfissionalNaBaseComSucesso() {
-
         Profissional profissional = objetoDeProfissional();
         String codigoPessoa = "123456789";
 
@@ -112,6 +132,20 @@ class profissionalServiceTest {
         Mockito.verify(usuarioRepository, Mockito.times(1)).delete(profissional);
     }
 
+    @Test
+    void erroAoTentarDeletarProfissionalQueNaoExisteNaBase(){
+        String codigoPessoa = "123456789";
+
+        Mockito.when(usuarioRepository.findByProfissional(codigoPessoa))
+                .thenThrow(new UsuarioNaoExisteException(MensagensDeErros.PROFISSIONALNAOEXISTE.getDescricao()));
+
+        UsuarioNaoExisteException exception = assertThrows(
+                UsuarioNaoExisteException.class, () -> profissionalService.deletaProfissional(codigoPessoa));
+
+        assertEquals( MensagensDeErros.PROFISSIONALNAOEXISTE.getDescricao(), exception.getMessage());
+        Mockito.verify(usuarioRepository, Mockito.times( 0)).delete(Mockito.any(Profissional.class));
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(codigoPessoa);
+    }
 
 
     Profissional objetoDeProfissional(){
@@ -134,5 +168,12 @@ class profissionalServiceTest {
 
     }
 
+    AlteraProfissionalDTO objetoDeAlteraProfissionalDTO(){
+        return AlteraProfissionalDTO.builder()
+                .nome("AlteraTeste")
+                .email("emailalterado@gmail.com")
+                .dataNascimento(LocalDate.parse("2003-04-22"))
+                .build();
+    }
 
 }
