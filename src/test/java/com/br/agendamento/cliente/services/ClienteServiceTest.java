@@ -50,8 +50,6 @@ import static org.junit.jupiter.api.Assertions.*;
         Mockito.verify(usuarioRepository, Mockito.times(2)).findByCliente(cliente.getCodigoPessoa());
         Mockito.verify(modelMapper, Mockito.times(1)).map(clienteDTO, Cliente.class);
         Mockito.verify(usuarioRepository, Mockito.times(1)).save(cliente);
-
-
     }
 
     @Test
@@ -111,7 +109,21 @@ import static org.junit.jupiter.api.Assertions.*;
         assertEquals(resultado.getEmail(),alteraClienteDTO.getEmail());
         assertEquals(resultado.getDataNascimento(),alteraClienteDTO.getDataNascimento());
     }
+    
 
+    @Test
+    void NaoLocalizaClienteNaBaseAoTentarLocalizarUsuarioNaBase() {
+        String codigoPessoa = "123456789";
+        AlteraClienteDTO alteraClienteDTO = objetoDeAlteraClienteDTO();
+
+        Mockito.when(usuarioRepository.findByCliente(codigoPessoa)).thenThrow(new UsuarioNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao()));
+
+        UsuarioNaoExisteException exception = assertThrows(
+              UsuarioNaoExisteException.class, () -> clienteService.alteraCliente(alteraClienteDTO,codigoPessoa));
+
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(codigoPessoa);
+        assertEquals(MensagensDeErros.CLIENTENAOEXISTE.getDescricao(), exception.getMessage());
+    }
 
     @Test
     void deletaClienteComSucessoNaBase() {
