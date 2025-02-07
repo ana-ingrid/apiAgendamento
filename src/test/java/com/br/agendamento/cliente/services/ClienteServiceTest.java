@@ -109,19 +109,22 @@ import static org.junit.jupiter.api.Assertions.*;
         assertEquals(resultado.getEmail(),alteraClienteDTO.getEmail());
         assertEquals(resultado.getDataNascimento(),alteraClienteDTO.getDataNascimento());
     }
-    
 
+    
     @Test
-    void NaoLocalizaClienteNaBaseAoTentarLocalizarUsuarioNaBase() {
+    void NaoDeveAlterarClienteQuandoUsuarioNaoExistir() {
         String codigoPessoa = "123456789";
         AlteraClienteDTO alteraClienteDTO = objetoDeAlteraClienteDTO();
 
-        Mockito.when(usuarioRepository.findByCliente(codigoPessoa)).thenThrow(new UsuarioNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao()));
+        Mockito.when(usuarioRepository.findByCliente(codigoPessoa)).thenReturn(null);
 
         UsuarioNaoExisteException exception = assertThrows(
               UsuarioNaoExisteException.class, () -> clienteService.alteraCliente(alteraClienteDTO,codigoPessoa));
 
         Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(codigoPessoa);
+
+        assertNotNull(exception);
+        assertInstanceOf(UsuarioNaoExisteException.class, exception);
         assertEquals(MensagensDeErros.CLIENTENAOEXISTE.getDescricao(), exception.getMessage());
     }
 
