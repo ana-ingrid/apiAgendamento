@@ -59,7 +59,7 @@ public class ClienteService {
 
     public Cliente alteraCliente(AlteraClienteDTO clienteDTO, String codigo){
         Cliente cliente = usuarioRepository.findByCliente(codigo);
-        if (Objects.isNull(cliente)) throw new UsuarioNaoExisteException("Cliente não existe");
+        if (Objects.isNull(cliente)) throw new UsuarioNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao());
 
         if (clienteDTO.getNome() != null) cliente.setNome(clienteDTO.getNome());
         if (clienteDTO.getEmail() != null) cliente.setEmail(clienteDTO.getEmail());

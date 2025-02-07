@@ -47,6 +47,7 @@ public class ProfissionalService {
 
     public Profissional alteraProfissional(AlteraProfissionalDTO alteraProfissionalDTO, String codigo){
         Profissional profissional = usuarioRepository.findByProfissional(codigo);
+        if (Objects.isNull(profissional)) throw new UsuarioNaoExisteException(MensagensDeErros.PROFISSIONALNAOEXISTE.getDescricao());
 
         if (Objects.nonNull(alteraProfissionalDTO.getDataNascimento()))profissional.setDataNascimento(alteraProfissionalDTO.getDataNascimento());
         if (Objects.nonNull(alteraProfissionalDTO.getNome()))profissional.setNome(alteraProfissionalDTO.getNome());
