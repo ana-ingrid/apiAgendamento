@@ -115,6 +115,7 @@ class profissionalServiceTest {
         assertEquals(resultado.getNome(),alteraProfissionalDTO.getNome());
         assertEquals(resultado.getEmail(),alteraProfissionalDTO.getEmail());
         assertEquals(resultado.getDataNascimento(),alteraProfissionalDTO.getDataNascimento());
+        assertInstanceOf(Profissional.class, resultado);
     }
 
 
