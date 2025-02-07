@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class profissionalServiceTest {
+class ProfissionalServiceTest {
 
     @InjectMocks
     protected ProfissionalService profissionalService;
@@ -117,6 +117,24 @@ class profissionalServiceTest {
         assertEquals(resultado.getDataNascimento(),alteraProfissionalDTO.getDataNascimento());
         assertInstanceOf(Profissional.class, resultado);
     }
+
+    @Test
+    void NaoDeveAlterarProfissionalQuandoUsuarioNaoExistir() {
+        String codigoPessoa = "123456789";
+        AlteraProfissionalDTO alteraProfissionalDTO = objetoDeAlteraProfissionalDTO();
+
+        Mockito.when(usuarioRepository.findByProfissional(codigoPessoa)).thenReturn(null);
+
+        UsuarioNaoExisteException exception = assertThrows(
+                UsuarioNaoExisteException.class, () -> profissionalService.alteraProfissional(alteraProfissionalDTO, codigoPessoa));
+
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(codigoPessoa);
+
+        assertNotNull(exception);
+        assertInstanceOf(UsuarioNaoExisteException.class, exception);
+        assertEquals(MensagensDeErros.PROFISSIONALNAOEXISTE.getDescricao(), exception.getMessage());
+    }
+
 
 
     @Test
