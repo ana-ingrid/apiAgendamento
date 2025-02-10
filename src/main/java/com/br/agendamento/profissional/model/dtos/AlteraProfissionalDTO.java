@@ -1,4 +1,4 @@
-package com.br.agendamento.cliente.model.dtos;
+package com.br.agendamento.profissional.model.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
@@ -10,11 +10,11 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Getter
 @Setter
+@Getter
 @AllArgsConstructor
 @Builder
-public class AlteraClienteDTO {
+public class AlteraProfissionalDTO {
 
     @Size(min = 3, max = 50)
     private String nome;

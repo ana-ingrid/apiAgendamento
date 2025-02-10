@@ -1,18 +1,22 @@
 package com.br.agendamento.cliente.services;
 
 
-import com.br.agendamento.cliente.exceptions.ClienteCadastradoException;
-import com.br.agendamento.cliente.exceptions.ClienteNaoExisteException;
 import com.br.agendamento.cliente.model.Cliente;
+import com.br.agendamento.cliente.model.dtos.AlteraClienteDTO;
 import com.br.agendamento.cliente.model.dtos.CadastraClienteDTO;
-import com.br.agendamento.usuario.repository.UsuarioRepository;
 import com.br.agendamento.cliente.service.ClienteService;
+import com.br.agendamento.config.MensagensDeErros;
+import com.br.agendamento.usuario.exceptions.UsuarioCadastradoException;
+import com.br.agendamento.usuario.exceptions.UsuarioNaoExisteException;
+import com.br.agendamento.usuario.repository.UsuarioRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,96 +36,147 @@ import static org.junit.jupiter.api.Assertions.*;
     @Test
     void cadastraClienteComSucessoNaBase() {
 
-        CadastraClienteDTO clienteDTO = new CadastraClienteDTO();
-        clienteDTO.setNome("nome");
-        clienteDTO.setEmail("teste@gmail.com");
-        clienteDTO.setCodigoPessoa("123456789");
+        CadastraClienteDTO clienteDTO = objetoClienteDTO();
 
-        Cliente cliente = new Cliente();
-        cliente.setNome("nome");
-        cliente.setEmail("teste@gmail.com");
-        cliente.setCodigoPessoa("123456789");
+        Cliente cliente = objetoCliente();
 
         Mockito.when(modelMapper.map(clienteDTO, Cliente.class)).thenReturn(cliente);
-        Mockito.when(clienteService.cadastraCliente(clienteDTO)).thenReturn(cliente);
+        Mockito.when(usuarioRepository.findByCliente(clienteDTO.getCodigoPessoa())).thenReturn(null);
+        Mockito.when(usuarioRepository.save(cliente)).thenReturn(cliente);
 
         Cliente clienteCadastrado = clienteService.cadastraCliente(clienteDTO);
 
         assertNotNull(clienteCadastrado);
-        assertEquals(clienteDTO.getNome(), clienteCadastrado.getNome());
-        assertEquals(clienteDTO.getEmail(), clienteCadastrado.getEmail());
-        assertEquals(clienteDTO.getCodigoPessoa(), clienteCadastrado.getCodigoPessoa());
-
+        Mockito.verify(usuarioRepository, Mockito.times(2)).findByCliente(cliente.getCodigoPessoa());
+        Mockito.verify(modelMapper, Mockito.times(1)).map(clienteDTO, Cliente.class);
+        Mockito.verify(usuarioRepository, Mockito.times(1)).save(cliente);
     }
 
     @Test
-    void clienteJaCadastradoNaBase() {
-        CadastraClienteDTO clienteDTO = new CadastraClienteDTO();
-        clienteDTO.setNome("nome");
-        clienteDTO.setEmail("teste@gmail.com");
-        clienteDTO.setCodigoPessoa("123456789");
+    void erroAoTentarCadastrarClienteJaExistenteNaBase() {
+        CadastraClienteDTO clienteDTO = objetoClienteDTO();
 
-        Mockito.when(clienteService.cadastraCliente(clienteDTO)).thenThrow(new ClienteCadastradoException("Cliente já cadastrado"));
+        Mockito.when(usuarioRepository.findByCliente(clienteDTO.getCodigoPessoa())).thenThrow(new UsuarioCadastradoException(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao()));
 
-        ClienteCadastradoException exception = assertThrows(
-                ClienteCadastradoException.class, () -> clienteService.cadastraCliente(clienteDTO));
+        UsuarioCadastradoException exception = assertThrows(
+                UsuarioCadastradoException.class, () -> clienteService.cadastraCliente(clienteDTO));
 
-        assertEquals("Cliente já cadastrado", exception.getMessage());
+        assertEquals(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao(), exception.getMessage());
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(clienteDTO.getCodigoPessoa());
     }
 
     @Test
-     void consultaCLienteNaBase() {
-        Cliente cliente = new Cliente();
-        cliente.setNome("nome");
-        cliente.setEmail("teste@gmail.com");
-        cliente.setCodigoPessoa("123456789");
+     void consultaClienteJaCadastradoNaBase() {
+        Cliente cliente = objetoCliente();
 
-        Mockito.when(usuarioRepository.findByUsuarioDoTipoCliente("123456789")).thenReturn(cliente);
+        Mockito.when(usuarioRepository.findByCliente(cliente.getCodigoPessoa())).thenReturn(cliente);
 
-        Cliente clienteConsultado = clienteService.consultaCliente("123456789");
+        Cliente resultado = clienteService.consultaCliente(cliente.getCodigoPessoa());
 
-        assertEquals(cliente.getNome(), clienteConsultado.getNome());
-        assertEquals(cliente.getCodigoPessoa(), clienteConsultado.getCodigoPessoa());
-
+        assertNotNull(resultado);
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(cliente.getCodigoPessoa());
     }
 
     @Test
-    void naoLocalizaClienteNaBase() {
-        Cliente cliente = new Cliente();
-        cliente.setNome("nome");
-        cliente.setEmail("teste@gmail.com");
-        cliente.setCodigoPessoa("123456789");
+    void deveLancarExcecaoQuandoClienteNaoForEncontrado() {
+        String codigoPessoa = "123456789";
 
-        Mockito.when(usuarioRepository.findByUsuarioDoTipoCliente("123456789")).thenThrow(new ClienteNaoExisteException("Cliente não existe"));
+        Mockito.when(usuarioRepository.findByCliente(codigoPessoa)).thenThrow(new UsuarioNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao()));
 
-        ClienteNaoExisteException exception = assertThrows(ClienteNaoExisteException.class, () -> clienteService.consultaCliente("123456789"));
+        UsuarioNaoExisteException exception = assertThrows(UsuarioNaoExisteException.class, () -> clienteService.consultaCliente(codigoPessoa));
 
 
-        assertEquals("Cliente não existe",exception.getMessage());
+        assertEquals(MensagensDeErros.CLIENTENAOEXISTE.getDescricao(),exception.getMessage());
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(codigoPessoa);
     }
 
+    @Test
+    void alteraTodosOsDadosDeClienteComSucesso(){
+
+        Cliente cliente = objetoCliente();
+        String codigoPessoa = "123456789";
+        AlteraClienteDTO alteraClienteDTO = objetoDeAlteraClienteDTO();
+
+        Mockito.when(usuarioRepository.findByCliente(codigoPessoa)).thenReturn(cliente);
+        Mockito.when(usuarioRepository.save(Mockito.any(Cliente.class))).
+                thenAnswer(invocation -> invocation.getArgument(0));
+
+        Cliente resultado = clienteService.alteraCliente(alteraClienteDTO,codigoPessoa);
+
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(codigoPessoa);
+        Mockito.verify(usuarioRepository, Mockito.times(1)).save(cliente);
+        assertEquals(resultado.getNome(),alteraClienteDTO.getNome());
+        assertEquals(resultado.getEmail(),alteraClienteDTO.getEmail());
+        assertEquals(resultado.getDataNascimento(),alteraClienteDTO.getDataNascimento());
+    }
+
+    
+    @Test
+    void NaoDeveAlterarClienteQuandoUsuarioNaoExistir() {
+        String codigoPessoa = "123456789";
+        AlteraClienteDTO alteraClienteDTO = objetoDeAlteraClienteDTO();
+
+        Mockito.when(usuarioRepository.findByCliente(codigoPessoa)).thenReturn(null);
+
+        UsuarioNaoExisteException exception = assertThrows(
+              UsuarioNaoExisteException.class, () -> clienteService.alteraCliente(alteraClienteDTO,codigoPessoa));
+
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(codigoPessoa);
+
+        assertNotNull(exception);
+        assertInstanceOf(UsuarioNaoExisteException.class, exception);
+        assertEquals(MensagensDeErros.CLIENTENAOEXISTE.getDescricao(), exception.getMessage());
+    }
 
     @Test
-    void deletaUsuarioNaBase() {
-        Cliente cliente = new Cliente();
-        cliente.setNome("nome");
-        cliente.setEmail("teste@gmail.com");
-        cliente.setCodigoPessoa("123456789");
+    void deletaClienteComSucessoNaBase() {
 
-        Mockito.when(usuarioRepository.findByUsuarioDoTipoCliente("123456789")).thenReturn(cliente);
+        Cliente cliente = objetoCliente();
+
+        Mockito.when(usuarioRepository.findByCliente(cliente.getCodigoPessoa())).thenReturn(cliente);
         clienteService.deletaCliente(cliente.getCodigoPessoa());
 
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(cliente.getCodigoPessoa());
         Mockito.verify(usuarioRepository, Mockito.times(1)).delete(cliente);
     }
 
     @Test
-    void erroDeClienteNaoLocalizadoAoDeletarUsuarioNaBase() {
-        Mockito.when(usuarioRepository.findByUsuarioDoTipoCliente("123456789")).thenThrow(new ClienteNaoExisteException("Cliente não existe"));
+    void erroDeClienteNaoLocalizadoAoTentarDeletarUsuarioNaBaseQueNaoExiste() {
+        String codigoPessoa = "123456789";
 
-        ClienteNaoExisteException exception = assertThrows(ClienteNaoExisteException.class, () -> clienteService.deletaCliente("123456789"));
+        Mockito.when(usuarioRepository.findByCliente(codigoPessoa)).thenThrow(new UsuarioNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao()));
 
-        assertEquals("Cliente não existe", exception.getMessage());
-        Mockito.verify(usuarioRepository, Mockito.times(1)).findByUsuarioDoTipoCliente("123456789");
+        UsuarioNaoExisteException exception = assertThrows(UsuarioNaoExisteException.class, () -> clienteService.deletaCliente(codigoPessoa));
+
+        assertEquals(MensagensDeErros.CLIENTENAOEXISTE.getDescricao(), exception.getMessage());
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(codigoPessoa);
     }
+
+    Cliente objetoCliente(){
+        return Cliente.builder()
+                .nome("teste")
+                .email("teste@gmail.com")
+                .codigoPessoa("123456789")
+                .dataNascimento(LocalDate.parse("2003-04-22"))
+                .build();
+    }
+
+    CadastraClienteDTO objetoClienteDTO(){
+        return CadastraClienteDTO.builder()
+                .nome("teste")
+                .email("teste@gmail.com")
+                .codigoPessoa("123456789")
+                .dataNascimento(LocalDate.parse("2003-04-22"))
+                .build();
+    }
+
+    AlteraClienteDTO objetoDeAlteraClienteDTO(){
+        return AlteraClienteDTO.builder()
+                .nome("AlteraTeste")
+                .email("emailalterado@gmail.com")
+                .dataNascimento(LocalDate.parse("2003-04-22"))
+                .build();
+    }
+
 
 }
