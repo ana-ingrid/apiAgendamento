@@ -35,15 +35,19 @@ class ProfissionalServiceTest {
     @Test
     void cadastraProfissionalComSucessoNaBase() {
 
-        CadastraProfissionalDTO profissionalDTO = objetoDeProfissionalDTO();
+        CadastraProfissionalDTO cadastraProfissionalDTO = objetoDeProfissionalDTO();
         Profissional profissional = objetoDeProfissional();
 
-        Mockito.when(usuarioRepository.findByProfissional(profissionalDTO.getCodigoPessoa())).thenReturn(null);
-        Mockito.when(modelMapper.map(profissionalDTO, Profissional.class)).thenReturn(profissional);
+        Mockito.when(usuarioRepository.findByProfissional(cadastraProfissionalDTO.getCodigoPessoa())).thenReturn(null);
+        Mockito.when(modelMapper.map(cadastraProfissionalDTO, Profissional.class)).thenReturn(profissional);
         Mockito.when(usuarioRepository.save(profissional)).thenReturn(profissional);
 
 
-       Profissional resultado = profissionalService.cadastraProfissional(profissionalDTO);
+       Profissional resultado = profissionalService.cadastraProfissional(cadastraProfissionalDTO);
+
+       Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(cadastraProfissionalDTO.getCodigoPessoa());
+
+       Mockito.verify(usuarioRepository, Mockito.times(1)).save(profissional);
 
        assertEquals(profissional, resultado);
        assertNotNull(resultado);
