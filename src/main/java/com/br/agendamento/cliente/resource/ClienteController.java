@@ -9,8 +9,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping(value = "/cadastro")
+@RequestMapping(value = "/cliente")
 @AllArgsConstructor
 public class ClienteController {
 
@@ -21,20 +23,29 @@ public class ClienteController {
         return ResponseEntity.status(201).body(clienteService.cadastraCliente(clienteDTO));
     }
 
-    @GetMapping("/{codigo}")
+    @GetMapping("{codigo}")
     public ResponseEntity<Cliente> consultaCliente(@PathVariable String codigo){
         return ResponseEntity.status(200).body(clienteService.consultaCliente(codigo));
     }
+
+    @GetMapping
+    public ResponseEntity<List<Cliente>> consultaTodosClientes(){
+        return ResponseEntity.status(200).body(clienteService.consultaTodosClientes());
+    }
+
 
     @PutMapping("{codigo}")
     public ResponseEntity<Cliente> alteraCliente(@Valid @RequestBody AlteraClienteDTO clienteDTO, @Valid @PathVariable String codigo){
         return ResponseEntity.status(200).body(clienteService.alteraCliente(clienteDTO, codigo));
     }
 
+    @DeleteMapping(value = "{codigo}")
     public ResponseEntity<Void> deletaCliente(@PathVariable  String codigo){
         clienteService.deletaCliente(codigo);
         return ResponseEntity.noContent().build();
     }
+
+
 
 }
 
