@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -31,6 +32,6 @@ public class Servico {
     private String nomeServico;
 
     private String descricao;
-    private double valor;
+    private BigDecimal valor;
 
 }
