@@ -2,9 +2,11 @@ package com.br.agendamento.cliente.model;
 
 import com.br.agendamento.agendamento.model.Agendamento;
 import com.br.agendamento.usuario.model.Usuario;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
@@ -12,7 +14,9 @@ import java.util.List;
 @DiscriminatorValue("CLIENTE")
 @Data
 @EqualsAndHashCode(callSuper = true)
-@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Cliente extends Usuario {
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)

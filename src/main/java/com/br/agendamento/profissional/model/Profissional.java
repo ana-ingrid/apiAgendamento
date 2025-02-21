@@ -4,16 +4,19 @@ import com.br.agendamento.agendamento.model.Agendamento;
 import com.br.agendamento.servico.model.Servico;
 import com.br.agendamento.usuario.model.Usuario;
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @DiscriminatorValue("PROFISSIONAL")
-@Data
 @EqualsAndHashCode(callSuper = true)
-@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Profissional extends Usuario {
 
     @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL)
