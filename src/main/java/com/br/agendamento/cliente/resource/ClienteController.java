@@ -25,7 +25,7 @@ public class ClienteController {
 
     @GetMapping("{codigo}")
     public ResponseEntity<Cliente> consultaCliente(@PathVariable String codigo){
-        return ResponseEntity.status(200).body(clienteService.consultaCliente(codigo));
+        return ResponseEntity.status(200).body(clienteService.consultaClienteOuValida(codigo, true));
     }
 
     @GetMapping
