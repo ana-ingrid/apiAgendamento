@@ -5,9 +5,9 @@ import com.br.agendamento.servico.model.Servico;
 import com.br.agendamento.usuario.model.Usuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 public class Profissional extends Usuario {
 
     @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL)

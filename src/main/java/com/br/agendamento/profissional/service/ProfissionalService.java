@@ -21,25 +21,25 @@ public class ProfissionalService {
     private UsuarioRepository usuarioRepository;
     private ModelMapper modelMapper;
 
-    public boolean consultaSeProfissionalExiste(String codigoPessoa){
-         Profissional buscaProfissional = usuarioRepository.findByProfissional(codigoPessoa);
-        return !Objects.isNull(buscaProfissional);
+    public Profissional consultaProfissionalOuValida(String codigoPessoa, Boolean deveLancarExcecao){
+        Profissional profissional = usuarioRepository.findByProfissional(codigoPessoa);
+        if (Objects.isNull(profissional) && deveLancarExcecao) {
+            throw new UsuarioNaoExisteException(MensagensDeErros.PROFISSIONALNAOEXISTE.getDescricao());
+        }
+        return profissional;
     }
 
+
     public Profissional cadastraProfissional(CadastraProfissionalDTO cadastraProfissionalDTO){
-        if (consultaSeProfissionalExiste(cadastraProfissionalDTO.getCodigoPessoa())){
+        String codigoPessoa = cadastraProfissionalDTO.getCodigoPessoa();
+
+        if (!Objects.isNull(consultaProfissionalOuValida(codigoPessoa, false))){
             throw new UsuarioCadastradoException(MensagensDeErros.PROFISSIONALJACADASTRADO.getDescricao());
         }
         Profissional profissional = modelMapper.map(cadastraProfissionalDTO, Profissional.class);
         return usuarioRepository.save(profissional);
     }
 
-    public Profissional consultaProfissional(String codigoPessoa){
-        Profissional profissional = usuarioRepository.findByProfissional(codigoPessoa);
-        if (Objects.isNull(profissional))
-            throw new UsuarioNaoExisteException(MensagensDeErros.PROFISSIONALNAOEXISTE.getDescricao());
-        return profissional;
-    }
 
     public List<Profissional> consultaTodosProfissionais(){
         return usuarioRepository.findByTodosUsuarioDoTipoProfissional();
