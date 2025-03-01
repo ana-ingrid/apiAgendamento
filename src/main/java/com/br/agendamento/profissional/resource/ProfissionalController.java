@@ -28,7 +28,7 @@ public class ProfissionalController {
 
     @GetMapping("{codigo}")
     public ResponseEntity<Profissional> consultaProfissional(@PathVariable String codigo){
-        return ResponseEntity.status(200).body(profissionalService.consultaProfissional(codigo));
+        return ResponseEntity.status(200).body(profissionalService.consultaProfissionalOuValida(codigo, true));
     }
 
     @GetMapping
