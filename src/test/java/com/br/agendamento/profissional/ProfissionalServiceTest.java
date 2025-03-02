@@ -1,4 +1,4 @@
-package com.br.agendamento.profissional.services;
+package com.br.agendamento.profissional;
 
 import com.br.agendamento.config.MensagensDeErros;
 import com.br.agendamento.profissional.model.Profissional;
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class ProfissionalServiceTest {
 
+    @Spy
     @InjectMocks
     protected ProfissionalService profissionalService;
 
@@ -38,19 +40,20 @@ class ProfissionalServiceTest {
         CadastraProfissionalDTO cadastraProfissionalDTO = objetoDeProfissionalDTO();
         Profissional profissional = objetoDeProfissional();
 
-        Mockito.when(usuarioRepository.findByProfissional(cadastraProfissionalDTO.getCodigoPessoa())).thenReturn(null);
+        Mockito.when(profissionalService.consultaProfissionalOuValida(cadastraProfissionalDTO.getCodigoPessoa(), false)).thenReturn(null);
         Mockito.when(modelMapper.map(cadastraProfissionalDTO, Profissional.class)).thenReturn(profissional);
         Mockito.when(usuarioRepository.save(profissional)).thenReturn(profissional);
 
 
-       Profissional resultado = profissionalService.cadastraProfissional(cadastraProfissionalDTO);
+       Profissional profissionalCadastrado = profissionalService.cadastraProfissional(cadastraProfissionalDTO);
 
-       Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(cadastraProfissionalDTO.getCodigoPessoa());
+        assertEquals(profissional, profissionalCadastrado);
+        assertNotNull(profissionalCadastrado);
 
-       Mockito.verify(usuarioRepository, Mockito.times(1)).save(profissional);
-
-       assertEquals(profissional, resultado);
-       assertNotNull(resultado);
+        Mockito.verify(profissionalService, Mockito.times(1)).consultaProfissionalOuValida(cadastraProfissionalDTO.getCodigoPessoa(), false);
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(cadastraProfissionalDTO.getCodigoPessoa());
+        Mockito.verify(modelMapper, Mockito.times(1)).map(cadastraProfissionalDTO, Profissional.class);
+        Mockito.verify(usuarioRepository, Mockito.times(1)).save(profissional);
     }
 
     @Test
@@ -64,7 +67,8 @@ class ProfissionalServiceTest {
         UsuarioCadastradoException exception = assertThrows(
                 UsuarioCadastradoException.class, () -> profissionalService.cadastraProfissional(profissionalDTO));
 
-        assertEquals("Profissional já cadastrado", exception.getMessage());
+        assertEquals(MensagensDeErros.PROFISSIONALJACADASTRADO.getDescricao(), exception.getMessage());
+        Mockito.verify(profissionalService, Mockito.times(1)).consultaProfissionalOuValida(profissionalDTO.getCodigoPessoa(),false);
         Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(profissionalDTO.getCodigoPessoa());
     }
 
@@ -72,17 +76,16 @@ class ProfissionalServiceTest {
     void consultaProfissionalJaCadastradoNaBase(){
 
         Profissional profissional = objetoDeProfissional();
-
         String codigoPessoa = "123456789";
 
        Mockito.when(usuarioRepository.findByProfissional(codigoPessoa)).thenReturn(profissional);
 
-       Profissional resultado = profissionalService.consultaProfissional(codigoPessoa);
+       Profissional resultado = profissionalService.consultaProfissionalOuValida(codigoPessoa, true);
 
        assertNotNull(resultado);
-       Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(codigoPessoa);
-       assertEquals(resultado.getCodigoPessoa(), codigoPessoa);
+       assertEquals( codigoPessoa, resultado.getCodigoPessoa());
 
+       Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(codigoPessoa);
     }
 
 
@@ -94,7 +97,7 @@ class ProfissionalServiceTest {
         Mockito.when(usuarioRepository.findByProfissional(codigoPessoa)).thenThrow(new UsuarioNaoExisteException(MensagensDeErros.PROFISSIONALNAOEXISTE.getDescricao()));
 
         UsuarioNaoExisteException exception = assertThrows(
-                UsuarioNaoExisteException.class, () -> profissionalService.consultaProfissional(codigoPessoa));
+                UsuarioNaoExisteException.class, () -> profissionalService.consultaProfissionalOuValida(codigoPessoa, true));
 
         assertEquals(MensagensDeErros.PROFISSIONALNAOEXISTE.getDescricao(), exception.getMessage());
         Mockito.verify(usuarioRepository, Mockito.times(1)).findByProfissional(codigoPessoa);
@@ -140,9 +143,9 @@ class ProfissionalServiceTest {
     }
 
 
-
     @Test
     void deletaProfissionalNaBaseComSucesso() {
+
         Profissional profissional = objetoDeProfissional();
         String codigoPessoa = "123456789";
 
