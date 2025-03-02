@@ -39,16 +39,17 @@ import static org.junit.jupiter.api.Assertions.*;
     void cadastraClienteComSucessoNaBase() {
 
         CadastraClienteDTO clienteDTO = objetoClienteDTO();
-
         Cliente cliente = objetoCliente();
 
-        Mockito.when(modelMapper.map(clienteDTO, Cliente.class)).thenReturn(cliente);
         Mockito.when(clienteService.consultaClienteOuValida(clienteDTO.getCodigoPessoa(), false)).thenReturn(null);
+        Mockito.when(modelMapper.map(clienteDTO, Cliente.class)).thenReturn(cliente);
         Mockito.when(usuarioRepository.save(cliente)).thenReturn(cliente);
 
         Cliente clienteCadastrado = clienteService.cadastraCliente(clienteDTO);
 
+        assertEquals(cliente, clienteCadastrado);
         assertNotNull(clienteCadastrado);
+
         Mockito.verify(clienteService, Mockito.times(1)).consultaClienteOuValida(clienteDTO.getCodigoPessoa(), false);
         Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(cliente.getCodigoPessoa());
         Mockito.verify(modelMapper, Mockito.times(1)).map(clienteDTO, Cliente.class);
@@ -57,9 +58,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
     @Test
     void erroAoTentarCadastrarClienteJaExistenteNaBase() {
+
         CadastraClienteDTO clienteDTO = objetoClienteDTO();
 
-        Mockito.when(clienteService.consultaClienteOuValida(clienteDTO.getCodigoPessoa(), false)).thenThrow(new UsuarioCadastradoException(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao()));
+        Mockito.when(clienteService.consultaClienteOuValida(clienteDTO.getCodigoPessoa(), false))
+                .thenThrow(new UsuarioCadastradoException(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao()));
 
         UsuarioCadastradoException exception = assertThrows(
                 UsuarioCadastradoException.class, () -> clienteService.cadastraCliente(clienteDTO));
@@ -71,13 +74,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
     @Test
      void consultaClienteJaCadastradoNaBase() {
-        Cliente cliente = objetoCliente();
 
-        Mockito.when(usuarioRepository.findByCliente(cliente.getCodigoPessoa())).thenReturn(cliente);
+        Cliente cliente = objetoCliente();
+        String codigoPessoa = "123456789";
+
+        Mockito.when(usuarioRepository.findByCliente(codigoPessoa)).thenReturn(cliente);
 
         Cliente resultado = clienteService.consultaClienteOuValida(cliente.getCodigoPessoa(), true);
 
         assertNotNull(resultado);
+        assertEquals(codigoPessoa, resultado.getCodigoPessoa());
+
         Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(cliente.getCodigoPessoa());
     }
 
@@ -136,16 +143,19 @@ import static org.junit.jupiter.api.Assertions.*;
     void deletaClienteComSucessoNaBase() {
 
         Cliente cliente = objetoCliente();
+        String codigoPessoa = "123456789";
 
-        Mockito.when(usuarioRepository.findByCliente(cliente.getCodigoPessoa())).thenReturn(cliente);
-        clienteService.deletaCliente(cliente.getCodigoPessoa());
+        Mockito.when(usuarioRepository.findByCliente(codigoPessoa)).thenReturn(cliente);
+        Mockito.doNothing().when(usuarioRepository).delete(cliente);
+        clienteService.deletaCliente(codigoPessoa);
 
-        Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(cliente.getCodigoPessoa());
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(codigoPessoa);
         Mockito.verify(usuarioRepository, Mockito.times(1)).delete(cliente);
     }
 
     @Test
     void erroDeClienteNaoLocalizadoAoTentarDeletarUsuarioNaBaseQueNaoExiste() {
+
         String codigoPessoa = "123456789";
 
         Mockito.when(usuarioRepository.findByCliente(codigoPessoa)).thenThrow(new UsuarioNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao()));
@@ -155,6 +165,7 @@ import static org.junit.jupiter.api.Assertions.*;
         assertEquals(MensagensDeErros.CLIENTENAOEXISTE.getDescricao(), exception.getMessage());
         Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(codigoPessoa);
     }
+
 
     Cliente objetoCliente(){
         return Cliente.builder()
