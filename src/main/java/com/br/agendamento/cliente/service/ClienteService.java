@@ -25,22 +25,22 @@ public class ClienteService {
     protected final UsuarioRepository usuarioRepository;
 
 
-    public Cliente consultaClienteOuValida(String codigo, boolean deveLancarExcecao){
-        Cliente cliente = usuarioRepository.findByCliente(codigo);
+    public Cliente consultaClienteOuValida(String codigoPessoa, boolean deveLancarExcecao){
+        Cliente cliente = usuarioRepository.findByCliente(codigoPessoa);
         if (Objects.isNull(cliente) && deveLancarExcecao){
             throw new UsuarioNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao());
         }
         return cliente;
     }
 
-    public Cliente cadastraCliente(CadastraClienteDTO cliente){
-        String codigo = cliente.getCodigoPessoa();
+    public Cliente cadastraCliente(CadastraClienteDTO cadastraClienteDTO){
+        String codigoPessoa = cadastraClienteDTO.getCodigoPessoa();
 
-        if (Objects.nonNull(consultaClienteOuValida(codigo, false))){
+        if (Objects.nonNull(consultaClienteOuValida(codigoPessoa, false))){
             throw new UsuarioCadastradoException(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao());
         }
-        Cliente clienteMapeado = modelMapper.map(cliente, Cliente.class);
-        return usuarioRepository.save(clienteMapeado);
+        Cliente cliente = modelMapper.map(cadastraClienteDTO, Cliente.class);
+        return usuarioRepository.save(cliente);
     }
 
     public List<Cliente> consultaTodosClientes(){
