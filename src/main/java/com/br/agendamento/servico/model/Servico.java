@@ -25,7 +25,7 @@ public class Servico {
     inverseJoinColumns = @JoinColumn(name = "profissional_id"))
     List<Profissional> profissionais;
 
-    @Column(name = "nome_servico")
+    @Column(name = "nome_servico", unique = true)
     private String nomeServico;
 
     private String descricao;
