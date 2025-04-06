@@ -11,10 +11,10 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity
-@Setter
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Agendamento {
 
     @Id

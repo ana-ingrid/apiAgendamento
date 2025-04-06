@@ -4,15 +4,18 @@ import com.br.agendamento.agendamento.model.Agendamento;
 import com.br.agendamento.servico.model.Servico;
 import com.br.agendamento.usuario.model.Usuario;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Entity
 @DiscriminatorValue("PROFISSIONAL")
-@Data
 @EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
 @SuperBuilder
 public class Profissional extends Usuario {
 

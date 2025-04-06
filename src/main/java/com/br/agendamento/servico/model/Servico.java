@@ -2,18 +2,16 @@ package com.br.agendamento.servico.model;
 
 import com.br.agendamento.profissional.model.Profissional;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Servico {
 
     @Id
@@ -27,10 +25,10 @@ public class Servico {
     inverseJoinColumns = @JoinColumn(name = "profissional_id"))
     List<Profissional> profissionais;
 
-    @Column(name = "nome_servico")
+    @Column(name = "nome_servico", unique = true)
     private String nomeServico;
 
     private String descricao;
-    private double valor;
+    private BigDecimal valor;
 
 }

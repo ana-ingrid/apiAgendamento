@@ -1,4 +1,4 @@
-package com.br.agendamento.cliente.services;
+package com.br.agendamento.cliente;
 
 
 import com.br.agendamento.cliente.model.Cliente;
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -23,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
  class ClienteServiceTest {
 
+    @Spy
     @InjectMocks
     protected ClienteService clienteService;
 
@@ -37,43 +39,52 @@ import static org.junit.jupiter.api.Assertions.*;
     void cadastraClienteComSucessoNaBase() {
 
         CadastraClienteDTO clienteDTO = objetoClienteDTO();
-
         Cliente cliente = objetoCliente();
 
+        Mockito.when(clienteService.consultaClienteOuValida(clienteDTO.getCodigoPessoa(), false)).thenReturn(null);
         Mockito.when(modelMapper.map(clienteDTO, Cliente.class)).thenReturn(cliente);
-        Mockito.when(usuarioRepository.findByCliente(clienteDTO.getCodigoPessoa())).thenReturn(null);
         Mockito.when(usuarioRepository.save(cliente)).thenReturn(cliente);
 
         Cliente clienteCadastrado = clienteService.cadastraCliente(clienteDTO);
 
+        assertEquals(cliente, clienteCadastrado);
         assertNotNull(clienteCadastrado);
-        Mockito.verify(usuarioRepository, Mockito.times(2)).findByCliente(cliente.getCodigoPessoa());
+
+        Mockito.verify(clienteService, Mockito.times(1)).consultaClienteOuValida(clienteDTO.getCodigoPessoa(), false);
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(cliente.getCodigoPessoa());
         Mockito.verify(modelMapper, Mockito.times(1)).map(clienteDTO, Cliente.class);
         Mockito.verify(usuarioRepository, Mockito.times(1)).save(cliente);
     }
 
     @Test
     void erroAoTentarCadastrarClienteJaExistenteNaBase() {
+
         CadastraClienteDTO clienteDTO = objetoClienteDTO();
 
-        Mockito.when(usuarioRepository.findByCliente(clienteDTO.getCodigoPessoa())).thenThrow(new UsuarioCadastradoException(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao()));
+        Mockito.when(clienteService.consultaClienteOuValida(clienteDTO.getCodigoPessoa(), false))
+                .thenThrow(new UsuarioCadastradoException(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao()));
 
         UsuarioCadastradoException exception = assertThrows(
                 UsuarioCadastradoException.class, () -> clienteService.cadastraCliente(clienteDTO));
 
         assertEquals(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao(), exception.getMessage());
+        Mockito.verify(clienteService, Mockito.times(1)).consultaClienteOuValida(clienteDTO.getCodigoPessoa(),false);
         Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(clienteDTO.getCodigoPessoa());
     }
 
     @Test
      void consultaClienteJaCadastradoNaBase() {
+
         Cliente cliente = objetoCliente();
+        String codigoPessoa = "123456789";
 
-        Mockito.when(usuarioRepository.findByCliente(cliente.getCodigoPessoa())).thenReturn(cliente);
+        Mockito.when(usuarioRepository.findByCliente(codigoPessoa)).thenReturn(cliente);
 
-        Cliente resultado = clienteService.consultaCliente(cliente.getCodigoPessoa());
+        Cliente resultado = clienteService.consultaClienteOuValida(cliente.getCodigoPessoa(), true);
 
         assertNotNull(resultado);
+        assertEquals(codigoPessoa, resultado.getCodigoPessoa());
+
         Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(cliente.getCodigoPessoa());
     }
 
@@ -83,7 +94,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
         Mockito.when(usuarioRepository.findByCliente(codigoPessoa)).thenThrow(new UsuarioNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao()));
 
-        UsuarioNaoExisteException exception = assertThrows(UsuarioNaoExisteException.class, () -> clienteService.consultaCliente(codigoPessoa));
+        UsuarioNaoExisteException exception = assertThrows(UsuarioNaoExisteException.class, () -> clienteService.consultaClienteOuValida(codigoPessoa, true));
 
 
         assertEquals(MensagensDeErros.CLIENTENAOEXISTE.getDescricao(),exception.getMessage());
@@ -132,16 +143,19 @@ import static org.junit.jupiter.api.Assertions.*;
     void deletaClienteComSucessoNaBase() {
 
         Cliente cliente = objetoCliente();
+        String codigoPessoa = "123456789";
 
-        Mockito.when(usuarioRepository.findByCliente(cliente.getCodigoPessoa())).thenReturn(cliente);
-        clienteService.deletaCliente(cliente.getCodigoPessoa());
+        Mockito.when(usuarioRepository.findByCliente(codigoPessoa)).thenReturn(cliente);
+        Mockito.doNothing().when(usuarioRepository).delete(cliente);
+        clienteService.deletaCliente(codigoPessoa);
 
-        Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(cliente.getCodigoPessoa());
+        Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(codigoPessoa);
         Mockito.verify(usuarioRepository, Mockito.times(1)).delete(cliente);
     }
 
     @Test
     void erroDeClienteNaoLocalizadoAoTentarDeletarUsuarioNaBaseQueNaoExiste() {
+
         String codigoPessoa = "123456789";
 
         Mockito.when(usuarioRepository.findByCliente(codigoPessoa)).thenThrow(new UsuarioNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao()));
@@ -151,6 +165,7 @@ import static org.junit.jupiter.api.Assertions.*;
         assertEquals(MensagensDeErros.CLIENTENAOEXISTE.getDescricao(), exception.getMessage());
         Mockito.verify(usuarioRepository, Mockito.times(1)).findByCliente(codigoPessoa);
     }
+
 
     Cliente objetoCliente(){
         return Cliente.builder()

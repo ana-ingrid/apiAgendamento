@@ -25,32 +25,22 @@ public class ClienteService {
     protected final UsuarioRepository usuarioRepository;
 
 
-    public Boolean consultaSeUsuarioClienteNaoExiste(String codigo){
-        Cliente tipoUsuario = usuarioRepository.findByCliente(codigo);
-        return Objects.isNull(tipoUsuario);
-    }
-
-    public Cliente cadastraCliente(CadastraClienteDTO cliente){
-        String codigo = cliente.getCodigoPessoa();
-        if (Objects.nonNull(usuarioRepository.findByCliente(codigo))){
-            throw new UsuarioCadastradoException(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao());
-        }
-
-        if (Boolean.FALSE.equals(consultaSeUsuarioClienteNaoExiste(codigo))){
-            throw new UsuarioCadastradoException(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao());
-        }
-
-        Cliente clienteMapeado = modelMapper.map(cliente, Cliente.class);
-        return usuarioRepository.save(clienteMapeado);
-    }
-
-
-    public Cliente consultaCliente(String codigo){
-        Cliente cliente = usuarioRepository.findByCliente(codigo);
-        if (Objects.isNull(cliente)){
+    public Cliente consultaClienteOuValida(String codigoPessoa, boolean deveLancarExcecao){
+        Cliente cliente = usuarioRepository.findByCliente(codigoPessoa);
+        if (Objects.isNull(cliente) && deveLancarExcecao){
             throw new UsuarioNaoExisteException(MensagensDeErros.CLIENTENAOEXISTE.getDescricao());
         }
         return cliente;
+    }
+
+    public Cliente cadastraCliente(CadastraClienteDTO cadastraClienteDTO){
+        String codigoPessoa = cadastraClienteDTO.getCodigoPessoa();
+
+        if (Objects.nonNull(consultaClienteOuValida(codigoPessoa, false))){
+            throw new UsuarioCadastradoException(MensagensDeErros.CLIENTEJACADASTRADO.getDescricao());
+        }
+        Cliente cliente = modelMapper.map(cadastraClienteDTO, Cliente.class);
+        return usuarioRepository.save(cliente);
     }
 
     public List<Cliente> consultaTodosClientes(){

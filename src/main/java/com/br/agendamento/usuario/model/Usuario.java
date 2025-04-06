@@ -1,7 +1,9 @@
 package com.br.agendamento.usuario.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
@@ -10,6 +12,8 @@ import java.time.LocalDate;
 @DiscriminatorColumn(name = "tipo_usuario", discriminatorType = DiscriminatorType.STRING)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @SuperBuilder
 @Table(name = "usuario", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"codigo_pessoa", "tipo_usuario"})})
@@ -28,4 +32,5 @@ public abstract class Usuario {
 
     @Column(name = "codigo_pessoa")
     private String codigoPessoa;
+
 }
