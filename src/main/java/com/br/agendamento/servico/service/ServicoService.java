@@ -20,12 +20,9 @@ public class ServicoService {
     protected ServicoRepository servicoRepository;
     protected ModelMapper modelMapper;
 
-    public Servico consultaServico(String nomeServico, boolean boleano) {
-        Servico servico = servicoRepository.findByServico(nomeServico);
-        if (Objects.isNull(servico) && boleano){
-            throw new ServicoNaoEncontradoException("Serviço não localizado");
-        }
-        return servico;
+    public Servico consultaServico(Integer id) {
+        return servicoRepository.findById(id)
+                .orElseThrow(() -> new ServicoNaoEncontradoException("Serviço não localizado"));
     }
 
     public Servico cadastraServico(CadastraServicoDTO cadastraServicoDTO){
