@@ -5,13 +5,15 @@ import com.br.agendamento.servico.exceptions.ServicoNaoEncontradoException;
 import com.br.agendamento.servico.model.Servico;
 import com.br.agendamento.servico.model.dtos.AlteraServicoDTO;
 import com.br.agendamento.servico.model.dtos.CadastraServicoDTO;
+import com.br.agendamento.servico.model.dtos.ServicoDTO;
 import com.br.agendamento.servico.repository.ServicoRepository;
 import com.br.agendamento.usuario.exceptions.UsuarioCadastradoException;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -25,8 +27,8 @@ public class ServicoService {
                 .orElseThrow(() -> new ServicoNaoEncontradoException("Serviço não localizado"));
     }
 
-    public Servico cadastraServico(CadastraServicoDTO cadastraServicoDTO){
-        if (!Objects.isNull(consultaServico(cadastraServicoDTO.getNomeServico(),false))){
+    public Servico cadastraServico(CadastraServicoDTO cadastraServicoDTO) {
+        if (servicoRepository.existsByNomeServico(cadastraServicoDTO.getNomeServico())) {
             throw new UsuarioCadastradoException(MensagensDeErros.PROFISSIONALJACADASTRADO.getDescricao());
         }
         Servico objServico = modelMapper.map(cadastraServicoDTO, Servico.class);
