@@ -35,10 +35,14 @@ public class ServicoService {
         return servicoRepository.save(objServico);
     }
 
-    public Servico alteraServico(AlteraServicoDTO alteraServicoDTO) {
-        Servico servicoConsultado = consultaServico(alteraServicoDTO.getNomeServico(), true);
-        Servico objMapeado = modelMapper.map(alteraServicoDTO, Servico.class);
-        modelMapper.map(objMapeado, servicoConsultado);
-        return servicoRepository.save(objMapeado);
+    public Servico alteraServico(Integer id, AlteraServicoDTO alteraServicoDTO) {
+        Servico servicoExistente = consultaServico(id);
+        modelMapper.map(alteraServicoDTO, servicoExistente);
+        return servicoRepository.save(servicoExistente);
+    }
+
+    public void deletaServico(Integer id) {
+        Servico servico = consultaServico(id);
+        servicoRepository.delete(servico);
     }
 }
