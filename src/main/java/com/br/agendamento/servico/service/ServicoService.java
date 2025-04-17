@@ -45,4 +45,12 @@ public class ServicoService {
         Servico servico = consultaServico(id);
         servicoRepository.delete(servico);
     }
+
+    public List<ServicoDTO> listaServico() {
+        return servicoRepository.findAll().stream()
+                .map(servico -> modelMapper.map(servico, ServicoDTO.class))
+                .collect(Collectors.toList());
+    }
+
 }
+
